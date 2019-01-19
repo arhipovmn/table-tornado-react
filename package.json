@@ -17,16 +17,17 @@
     "events": "latest"
   },
   "devDependencies": {
-    "babel-core": "latest",
     "babel-cli": "latest",
-    "babel-loader": "latest",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
     "babel-polyfill": "latest",
-    "babel-preset-env": "latest",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "latest",
     "css-loader": "latest",
     "less": "latest",
     "less-loader": "latest",
-    "webpack": "latest"
+    "webpack": "^4.28.4",
+    "webpack-cli": "latest"
   },
   "repository": {
     "type": "git",
