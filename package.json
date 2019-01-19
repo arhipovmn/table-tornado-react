@@ -35,7 +35,7 @@
   },
   "scripts": {
     "babel": "babel js/src -d js/build --progress",
-    "webpack": "webpack -p --config js/webpack.config.js --progress"
+    "webpack": "webpack -p --config js/webpack.config.js --progress --mode development "
   },
   "babel": {
     "presets": [

@@ -19,7 +19,7 @@ const lessLoader = {
 const srcPath = path.resolve(__dirname, "./src");
 
 module.exports = {
-    entry:'./js/src/index.js',
+    entry:'./js/src/index.jsx',
     output: {
         path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js',
