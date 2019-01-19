@@ -39,7 +39,7 @@ module.exports = {
                                     "env", {
                                         modules: false,
                                         targets: {
-                                            browsers: ["last 2 versions", "not ie 10"],
+                                            browsers: ["last 2 versions"],
                                         },
                                     }
                                 ],
