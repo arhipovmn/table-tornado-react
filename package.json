@@ -1,0 +1,54 @@
+{
+  "name": "tornado_react_etc",
+  "description": "tornado_react_etc",
+  "verion": "1.0.0",
+  "author": "i",
+  "license": "ISC",
+  "main": "index.js",
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router": "latest",
+    "react-router-dom": "latest",
+    "react-router-redux": "latest",
+    "redux": "latest",
+    "react-redux": "latest",
+    "redux-thunk": "latest",
+    "events": "latest"
+  },
+  "devDependencies": {
+    "babel-core": "latest",
+    "babel-cli": "latest",
+    "babel-loader": "latest",
+    "babel-polyfill": "latest",
+    "babel-preset-env": "latest",
+    "babel-preset-react": "latest",
+    "css-loader": "latest",
+    "less": "latest",
+    "less-loader": "latest",
+    "webpack": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arhipovmn/tornado-react-etc"
+  },
+  "scripts": {
+    "babel": "babel js/src -d js/build --progress",
+    "webpack": "webpack -p --config js/webpack.config.js --progress"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "not ie 10"
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
