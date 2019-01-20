@@ -7,6 +7,8 @@ import tornado.web
 
 import tornado.template
 
+import tornado.escape
+
 # import tornado.tcpserver
 from tornado.httpserver import HTTPServer
 import tornado.ioloop
@@ -22,10 +24,13 @@ STATIC_PATH = os.path.join(dirname, 'js')
 
 class MainHandler(tornado.web.RequestHandler):
 
-
-
     def get(self):
-        self.render("index.html")
+        self.render('index.html')
+
+    def post(self):
+        data = tornado.escape.json_decode(self.request.body)
+        self.write(data)
+
 
 
 

@@ -34,8 +34,8 @@
     "url": "https://github.com/arhipovmn/table-tornado-react"
   },
   "scripts": {
-    "babel": "babel js/src -d js/build --progress",
-    "webpack": "webpack -p --config js/webpack.config.js --progress --mode development "
+    "babel": "babel js/src -d js/build --progress --presets babel-preset-react",
+    "webpack": "webpack -p --config js/webpack.config.js --progress --mode development"
   },
   "babel": {
     "presets": [

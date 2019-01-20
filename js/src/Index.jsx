@@ -8,6 +8,19 @@ class Index extends React.Component {
     }
 
 
+    componentDidMount() {
+        debugger;
+
+        const request = new Request('/', {method: 'POST', body: '{"foo": "bar"}'});
+        fetch(request).then(responce => {
+            debugger;
+        }).catch(error => {
+            debugger;
+        });
+
+    }
+
+
     render () {
 
         let yes = 'yes';
