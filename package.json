@@ -4,17 +4,13 @@
   "verion": "1.0.0",
   "author": "i",
   "license": "ISC",
-  "main": "index.js",
   "dependencies": {
+    "classnames": "^2.2.6",
     "react": "latest",
     "react-dom": "latest",
-    "react-router": "latest",
-    "react-router-dom": "latest",
-    "react-router-redux": "latest",
-    "redux": "latest",
-    "react-redux": "latest",
-    "redux-thunk": "latest",
-    "events": "latest"
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "style-loader": "^0.23.1"
   },
   "devDependencies": {
     "babel-cli": "latest",
@@ -26,7 +22,7 @@
     "css-loader": "latest",
     "less": "latest",
     "less-loader": "latest",
-    "webpack": "^4.28.4",
+    "webpack": "^4.29.0",
     "webpack-cli": "latest"
   },
   "repository": {
@@ -35,20 +31,6 @@
   },
   "scripts": {
     "babel": "babel js/src -d js/build --progress --presets babel-preset-react",
-    "webpack": "webpack -p --config js/webpack.config.js --progress --mode development"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "browsers": [
-              "last 2 versions"
-            ]
-          }
-        }
-      ]
-    ]
+    "build": "webpack -p --config webpack.config.js --progress --mode development"
   }
 }

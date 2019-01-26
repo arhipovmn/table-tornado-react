@@ -16,18 +16,19 @@ const lessLoader = {
     },
 };
 
-const srcPath = path.resolve(__dirname, "./src");
+const srcPath = path.resolve(__dirname, "./core/js");
 
 module.exports = {
-    entry:'./js/src/index.jsx',
+    mode: "development", // this production and webpack.config.js
+    entry:'./core/js/Index.jsx',
     output: {
-        path: path.resolve(__dirname, 'build'),
+        path: path.resolve(__dirname, './static'),
         filename: 'bundle.js',
-        publicPath: './js/build/',
+        publicPath: './static/',
     },
     module: {
         rules: [
-            { //0
+            {
                 test: /\.(js|jsx)$/,
                 include: [srcPath],
                 use: [
@@ -39,7 +40,7 @@ module.exports = {
                                     "env", {
                                         modules: false,
                                         targets: {
-                                            browsers: ["last 2 versions"],
+                                            browsers: [">0.25%"]
                                         },
                                     }
                                 ],
@@ -80,4 +81,4 @@ module.exports = {
             },
         ],
     }
-}
+};

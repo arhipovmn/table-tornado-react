@@ -1,0 +1,35 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  font-family: Verdana, sans-serif;;
+  font-size: 14px;
+
+  > .router-link {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 30px;
+
+    &.router-link-auth {
+      justify-content: space-between;
+    }
+
+    > div {
+
+      &:first-child {
+        margin-right: 10px;
+      }
+
+      > .selected {
+        font-weight: bold;
+      }
+    }
+
+  }
+
+  > .content {
+    padding-top: 30px;
+    border-top: 1px solid #dddddd;
+  }
+}
+
