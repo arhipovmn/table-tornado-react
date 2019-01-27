@@ -17,15 +17,13 @@ export default class Auth extends React.Component {
     onSubmit(e) {
         e.preventDefault();
 
-        const auth = {
-            login: this.state.login,
-            password: this.state.password,
-        };
-
         fetch('/auth', {
             method: 'POST',
             cache: 'no-cache',
-            body: JSON.stringify(auth),
+            body: JSON.stringify({
+                login: this.state.login,
+                password: this.state.password,
+            }),
         }).then(responce => {
             responce.text().then(text => {
                 if (text === 'ok') {

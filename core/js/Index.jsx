@@ -19,10 +19,6 @@ class Index extends React.Component {
         };
     }
 
-    componentDidMount() {
-        debugger;
-    }
-
     handlerAuth(auth) {
         this.setState({auth});
     }

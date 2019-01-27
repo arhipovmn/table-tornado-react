@@ -33,7 +33,7 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         user_id = self.get_secure_cookie('auth')
         user_id = 0 if user_id is None else int(user_id)
-        count = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', user_id)
+        count = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
         if count:
             self.user = self.cursor.fetchone()
             user_id = self.user['ID']
@@ -52,16 +52,21 @@ class BaseHandler(tornado.web.RequestHandler):
         self.render('index.html', title='Таблица', user_id=user_id_in_template)
 
     def check_auth(self, data):
-        count = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', data.get('login'))
+        count = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
         if count:
             row = self.cursor.fetchone()
-            if row['PASSWORD'] == data.get('password'):
+            if row['PASSWORD'] == data['password']:
                 return row['ID']
             else:
                 return 0
 
         return 0
 
+    def get_json(self):
+        return tornado.escape.json_decode(self.request.body)
+
+    def set_json(self, object):
+        return tornado.escape.json_encode(object)
 
 class MainHandler(BaseHandler):
     def get(self):
@@ -73,7 +78,7 @@ class AuthHandler(BaseHandler):
         self.default_response()
 
     def post(self):
-        data = tornado.escape.json_decode(self.request.body)
+        data = self.get_json()
         user_id = self.check_auth(data)
         if user_id:
             self.set_secure_cookie('auth', str(user_id))
@@ -88,17 +93,44 @@ class QuitHandler(BaseHandler):
         self.redirect('/')
 
 
+class TableHandler(BaseHandler):
+    def get(self):
+        self.set_status(405)
+
+    def post(self):
+        data = self.get_json()
+
+        if data['mode'] == 'get':
+            factor = 10
+
+            end_limit = factor if data['page'] <= 1 else data['page']*factor
+
+            count = self.cursor.execute('SELECT * FROM master_orders LIMIT %s, %s;', [end_limit-factor, end_limit])
+            if count:
+                row = self.cursor.fetchall()
+            else:
+                row = {}
+
+            self.write(self.set_json(row))
+        elif data['mode'] == 'save':
+            return False
+        elif data['mode'] == 'delete':
+            return False
+
+
 settings = {
     'template_path': os.path.join(dirname, 'template'),
     "static_path": os.path.join(dirname, 'static'),
     "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
-    ##"xsrf_cookies": True,
 }
 
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
+        (r"/table_get", TableHandler),
+        # (r"/table_save", TableHandler),
+        # (r"/table_delete", TableHandler),
         (r"/auth", AuthHandler),
         (r"/quit", QuitHandler)
     ], **settings)
