@@ -10,12 +10,8 @@ export default class Auth extends React.Component {
         this.state = {
             login: '',
             password: '',
+            error: false,
         };
-
-        this.propTypes = {
-            handlerAuth: PropTypes.func,
-        };
-
     };
 
     onSubmit(e) {
@@ -39,8 +35,7 @@ export default class Auth extends React.Component {
                     throw text;
                 }
             }).catch(() => {
-                window.auth = false;
-                this.props.handlerAuth(window.auth);
+                this.setState({error: true});
             });
         }).catch(error => {
             console.error('nor responce');
@@ -59,7 +54,12 @@ export default class Auth extends React.Component {
                        onChange={e => this.setState({password: e.target.value})}/></label>
             <div>
                 <button>Вход</button>
+                {this.state.error ? <span>Неправильный логин или пароль</span> : null}
             </div>
         </form>;
     };
 }
+
+Auth.propTypes = {
+    handlerAuth: PropTypes.func,
+};

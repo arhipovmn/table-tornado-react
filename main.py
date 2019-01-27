@@ -14,73 +14,80 @@ import tornado.ioloop
 
 import tornado.ioloop
 
+import pymysql
+
+connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='',
+                             db='master',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
+
+dirname = os.path.dirname(__file__)
 
 
 class BaseHandler(tornado.web.RequestHandler):
+    cursor = connection.cursor()
+    user = {}
+
     def get_current_user(self):
-        return self.get_secure_cookie('auth')
+        user_id = self.get_secure_cookie('auth')
+        user_id = 0 if user_id is None else int(user_id)
+        count = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', user_id)
+        if count:
+            self.user = self.cursor.fetchone()
+            user_id = self.user['ID']
+        else:
+            self.clear_cookie('auth')
+            user_id = 0
 
-    def defaultResponse(self):
-        auth = ''
-        if self.current_user != None:
-            auth = tornado.escape.xhtml_escape(self.current_user)
+        return user_id
 
-        self.render('index.html', title='Таблица', auth=auth)
+    def default_response(self):
+        user_id = 0
+        if self.current_user:
+            user_id = tornado.escape.xhtml_escape(str(self.current_user))
+
+        user_id_in_template = 'true' if bool(user_id) == True else ''
+        self.render('index.html', title='Таблица', user_id=user_id_in_template)
+
+    def check_auth(self, data):
+        count = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', data.get('login'))
+        if count:
+            row = self.cursor.fetchone()
+            if row['PASSWORD'] == data.get('password'):
+                return row['ID']
+            else:
+                return 0
+
+        return 0
+
 
 class MainHandler(BaseHandler):
     def get(self):
-        self.defaultResponse()
-
-    # def post(self):
-    #     data = tornado.escape.json_decode(self.request.body)
-    #
-    #     if data.get('type') == 'auth':
-    #         if data.get('login') == 'admin' and data.get('password') == '123456':
-    #             self.set_secure_cookie('auth', data.get('login'))
-    #         else:
-    #             self.write('error')
-    #
-    #     self.write('ok')
-
+        self.default_response()
 
 
 class AuthHandler(BaseHandler):
     def get(self):
-        self.defaultResponse()
+        self.default_response()
 
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-
-        if data.get('login') == 'admin' and data.get('password') == '123456':
-            self.set_secure_cookie('auth', data.get('login'))
+        user_id = self.check_auth(data)
+        if user_id:
+            self.set_secure_cookie('auth', str(user_id))
             self.write('ok')
-            return
         else:
             self.write('error')
-            return
+
 
 class QuitHandler(BaseHandler):
     def get(self):
         self.clear_cookie('auth')
         self.redirect('/')
 
-# class LoginHandler(BaseHandler):
-#     def post(self):
-#         data = tornado.escape.json_decode(self.request.body)
-#         if self.get_argument('login') == 'mihan' and self.get_argument('password') == '123456':
-#             self.set_secure_cookie('login', self.get_argument('login'))
-#             self.redirect('/')
-#         else:
-#             self.redirect('/')
 
-
-
-
-
-
-
-
-dirname = os.path.dirname(__file__)
 settings = {
     'template_path': os.path.join(dirname, 'template'),
     "static_path": os.path.join(dirname, 'static'),
@@ -88,12 +95,14 @@ settings = {
     ##"xsrf_cookies": True,
 }
 
+
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/auth", AuthHandler),
         (r"/quit", QuitHandler)
     ], **settings)
+
 
 # if __name__ == "__main__":
 #     app = make_app()

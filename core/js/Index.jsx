@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Redirect } from 'react-router';
+import {Redirect} from 'react-router';
 import {BrowserRouter, Route, NavLink} from "react-router-dom";
 
 import classNames from 'classnames';
@@ -14,31 +14,28 @@ class Index extends React.Component {
     constructor(props) {
         super(props);
 
-
         this.state = {
             auth: window.auth,
         };
     }
 
     componentDidMount() {
-        //debugger;
+        debugger;
     }
 
-    handlerAuth(auth){
+    handlerAuth(auth) {
         this.setState({auth});
     }
 
     render() {
-
-        let yes = 'yes';
 
         return <BrowserRouter>
             <div className={style['root']}>
                 <div className={classNames(style['router-link'], this.state.auth ? style['router-link-auth'] : false)}>
                     <div>[<NavLink exact to={'/'} activeClassName={style['selected']}>Таблица</NavLink>]</div>
                     <div>[{this.state.auth
-                            ? <a href={'/quit'}>Выход</a>
-                            : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
+                        ? <a href={'/quit'}>Выход</a>
+                        : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
                     </div>
                 </div>
                 <div className={style['content']}>
