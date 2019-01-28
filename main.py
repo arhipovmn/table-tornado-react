@@ -102,14 +102,31 @@ class TableHandler(BaseHandler):
 
         if data['mode'] == 'get':
             factor = 10
+            row = {}
+            count_page = 0
 
-            end_limit = factor if data['page'] <= 1 else data['page']*factor
+            count = self.cursor.execute('SELECT COUNT(ID) as COUNT FROM master_orders')
 
-            count = self.cursor.execute('SELECT * FROM master_orders LIMIT %s, %s;', [end_limit-factor, end_limit])
             if count:
-                row = self.cursor.fetchall()
-            else:
-                row = {}
+                row_count = self.cursor.fetchone()
+
+                if row_count['COUNT'] and row_count['COUNT'] > factor:
+                    count_page = row_count['COUNT'] / factor
+                    count_page = round(count_page)
+                elif row_count['COUNT']:
+                    count_page = 1
+                else:
+                    count_page = 0
+
+            if count_page:
+                end_limit = factor if data['page'] <= 1 else data['page']*factor
+                count = self.cursor.execute('SELECT ID, NUMBER, BODY, `WHERE`, DATE_FORMAT(CREATED, %s) AS CREATED, '
+                                            'DATE_FORMAT(DATAPAY, %s) AS DATAPAY, TRACKNUMBER, COMPLETED '
+                                            'FROM master_orders LIMIT %s, %s;',
+                                            ["%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", end_limit-factor, end_limit])
+                if count:
+                    row = self.cursor.fetchall()
+                    row.append({'page': count_page})
 
             self.write(self.set_json(row))
         elif data['mode'] == 'save':
@@ -128,9 +145,7 @@ settings = {
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/table_get", TableHandler),
-        # (r"/table_save", TableHandler),
-        # (r"/table_delete", TableHandler),
+        (r"/table", TableHandler),
         (r"/auth", AuthHandler),
         (r"/quit", QuitHandler)
     ], **settings)
