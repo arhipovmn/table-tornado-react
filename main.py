@@ -120,9 +120,12 @@ class TableHandler(BaseHandler):
 
             if count_page:
                 end_limit = factor if data['page'] <= 1 else data['page']*factor
-                count = self.cursor.execute('SELECT ID, NUMBER, BODY, `WHERE`, DATE_FORMAT(CREATED, %s) AS CREATED, '
-                                            'DATE_FORMAT(DATAPAY, %s) AS DATAPAY, TRACKNUMBER, COMPLETED '
-                                            'FROM master_orders LIMIT %s, %s;',
+                count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.`WHERE`, mo.USER_CREATED, '
+                                            'DATE_FORMAT(mo.CREATED, %s) AS CREATED, DATE_FORMAT(mo.DATAPAY, %s) AS DATAPAY, '
+                                            'mo.TRACKNUMBER, mo.COMPLETED, u.LOGIN '
+                                            'FROM master_orders AS mo '
+                                            'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
+                                            'LIMIT %s, %s;',
                                             ["%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", end_limit-factor, end_limit])
                 if count:
                     row = self.cursor.fetchall()

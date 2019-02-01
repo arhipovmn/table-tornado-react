@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Redirect} from 'react-router';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux'
 import {BrowserRouter, Route, NavLink} from "react-router-dom";
 
 import classNames from 'classnames';
 
-import Table from './components/Table/Table.jsx';
-import Auth from './components/Auth/Auth.jsx';
+import reducer from '../../reducer';
+import defaultStore from '../../reducer/initStore';
+
+import Table from '../../container/table';
+import Auth from '../Auth/Auth.jsx';
 
 import style from './Index.less';
 
@@ -45,6 +50,10 @@ class Index extends React.Component {
     };
 }
 
+const store = createStore(reducer, defaultStore, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
 if (document.getElementById('index')) {
-    ReactDOM.render(<Index/>, document.getElementById('index'));
+    ReactDOM.render(<Provider store={store}>
+        <Index/>
+    </Provider>, document.getElementById('index'));
 }
