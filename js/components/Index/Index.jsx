@@ -7,7 +7,7 @@ import {BrowserRouter, Route, NavLink} from "react-router-dom";
 
 import classNames from 'classnames';
 
-import reducer from '../../reducer';
+import reducer from '../../reducer/index';
 import defaultStore from '../../reducer/initStore';
 
 import Table from '../../container/table';

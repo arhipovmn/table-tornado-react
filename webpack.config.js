@@ -16,11 +16,11 @@ const lessLoader = {
     },
 };
 
-const srcPath = path.resolve(__dirname, "./core/js");
+const srcPath = path.resolve(__dirname, "./js");
 
 module.exports = {
     mode: "development", // this production and webpack.config.js
-    entry:'./core/js/components/Index/Index.jsx',
+    entry:'./js/components/Index/Index.jsx',
     output: {
         path: path.resolve(__dirname, './static'),
         filename: 'bundle.js',

@@ -1,8 +1,12 @@
 import {fetchData} from '../helper/tableAjax';
 
 export const getData = dispatch => {
-    fetchData().then(responce => {
-        responce.json().then(json => {
+    dispatch({
+        type: 'FETCHING',
+        fetching: true,
+    });
+    fetchData().then(response => {
+        response.json().then(json => {
             if (!Object.keys(json).length) throw 'empty';
             return dispatch({
                 type: 'GET_DATA',
@@ -12,6 +16,6 @@ export const getData = dispatch => {
             console.error(error);
         });
     }).catch(error => {
-        console.error(`nor responce ${error}`);
+        console.error(`nor response ${error}`);
     });
 };

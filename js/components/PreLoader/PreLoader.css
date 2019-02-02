@@ -1,0 +1,8 @@
+.pre-loader {
+
+}
+
+.pre-loader > .fetching {
+    width: 100%;
+    height: auto;
+}

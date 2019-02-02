@@ -6,6 +6,7 @@
   "license": "ISC",
   "dependencies": {
     "classnames": "^2.2.6",
+    "prop-types": "^15.6.2",
     "react": "latest",
     "react-dom": "latest",
     "react-redux": "^6.0.0",
@@ -32,7 +33,7 @@
     "url": "https://github.com/arhipovmn/table-tornado-react"
   },
   "scripts": {
-    "babel": "babel js/src -d js/build --progress --presets babel-preset-react",
+    "babel": "babel js -d static --progress --presets babel-preset-react",
     "build": "webpack -p --config webpack.config.js --progress --mode development"
   }
 }
