@@ -45,11 +45,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def default_response(self):
         user_id = 0
+        user_class = 0
         if self.current_user:
             user_id = tornado.escape.xhtml_escape(str(self.current_user))
+            user_class = self.user['CLASS']
 
-        user_id_in_template = 'true' if bool(user_id) == True else ''
-        self.render('index.html', title='Таблица', user_id=user_id_in_template)
+        auth = 'true' if bool(user_id) == True else ''
+        self.render('index.html', title='Таблица', auth=auth, user_class=user_class)
 
     def check_auth(self, data):
         count = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
@@ -101,7 +103,7 @@ class TableHandler(BaseHandler):
         data = self.get_json()
 
         if data['mode'] == 'get':
-            factor = 10
+            factor = 2
             row = {}
             count_page = 0
 
@@ -121,12 +123,12 @@ class TableHandler(BaseHandler):
             if count_page:
                 end_limit = factor if data['page'] <= 1 else data['page']*factor
                 count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.`WHERE`, mo.USER_CREATED, '
-                                            'DATE_FORMAT(mo.CREATED, %s) AS CREATED, DATE_FORMAT(mo.DATAPAY, %s) AS DATAPAY, '
-                                            'mo.TRACKNUMBER, mo.COMPLETED, u.LOGIN '
+                                            'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
+                                            'DATE_FORMAT(mo.DATE_COMPLETED, %s) AS DATE_COMPLETED, mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
                                             'FROM master_orders AS mo '
                                             'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
                                             'LIMIT %s, %s;',
-                                            ["%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", end_limit-factor, end_limit])
+                                            ["%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", end_limit-factor, end_limit])
                 if count:
                     row = self.cursor.fetchall()
                     row.append({'page': count_page})
@@ -149,6 +151,7 @@ def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/table", TableHandler),
+        (r"/page/[1-9]{1,11}", MainHandler),
         (r"/auth", AuthHandler),
         (r"/quit", QuitHandler)
     ], **settings)

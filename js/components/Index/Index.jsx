@@ -29,18 +29,22 @@ class Index extends React.Component {
     }
 
     render() {
-
         return <BrowserRouter>
             <div className={style['root']}>
                 <div className={classNames(style['router-link'], this.state.auth ? style['router-link-auth'] : false)}>
-                    <div>[<NavLink exact to={'/'} activeClassName={style['selected']}>Таблица</NavLink>]</div>
+                    <div>
+                        [<NavLink exact to={'/'}
+                                  isActive={(match, location) => (match ? true : location.pathname.includes('/page/'))}
+                                  activeClassName={style['selected']}>Таблица</NavLink>]
+                    </div>
                     <div>[{this.state.auth
                         ? <a href={'/quit'}>Выход</a>
                         : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
                     </div>
                 </div>
                 <div className={style['content']}>
-                    <Route exact path={'/'} component={Table}/>
+                    <Route exact path={'/'} render={props => <Table {...props}/>}/>
+                    <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
                     <Route path={'/auth'} render={() => this.state.auth
                         ? <Redirect to={'/'}/>
                         : <Auth handlerAuth={this.handlerAuth.bind(this)}/>}/>

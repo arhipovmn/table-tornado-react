@@ -1,6 +1,7 @@
 {% include "header.html" %}
 <script type="text/javascript">
-    window.auth = !!'{{ user_id }}';
+    window.auth = !!'{{auth}}';
+    window.user_class = +'{{user_class}}';
 </script>
 <div id="index"></div>
 {% include "footer.html" %}

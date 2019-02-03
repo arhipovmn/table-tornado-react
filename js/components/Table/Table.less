@@ -1,8 +1,12 @@
+.center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .table {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-width: 1050px;
   border: 1px solid #99baca;
   border-radius: 3px;
 
@@ -31,61 +35,68 @@
     flex-direction: row;
     align-items: flex-start;
     border-bottom: 1px solid #99baca;
+    height: 200px;
 
     &:last-child {
       border-bottom: none;
     }
 
     > .td {
+      height: 100%;
 
       > div {
-        height: 40px;
+        height: 100%;
+        box-sizing: border-box;
         padding: 10px 0 10px 0;
+
+        .description {
+          width: 100%;
+          overflow-x: hidden;
+          overflow-y: auto;
+          flex-grow: 1;
+          padding-bottom: 10px;
+
+          > div:first-child {
+            padding-bottom: 10px;
+          }
+        }
+
+        > div {
+
+        }
       }
     }
   }
 
-  .td {
-    border-right: 1px solid #99baca;
-    padding: 0 10px 0 10px;
-    box-sizing: border-box;
+  > .th, .tr {
 
-    &:last-child {
-      border-right: none;
+    .td {
+      border-right: 1px solid #99baca;
+      padding: 0 10px 0 10px;
+      box-sizing: border-box;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      > div {
+        display: flex;
+        flex-direction: column;
+      }
     }
 
-    > div {
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .td:nth-child(1) {
+      min-width: 60px;
+      max-width: 60px;
     }
-  }
-
-  .td:nth-child(1) {
-    min-width: 60px;
-    max-width: 60px;
-  }
-  .td:nth-child(2) {
-    flex-grow: 1;
-    min-width: 250px;
-  }
-  .td:nth-child(3) {
-    min-width: 250px;
-    max-width: 250px;
-  }
-  .td:nth-child(4) {
-    min-width: 120px;
-    max-width: 120px;
-  }
-  .td:nth-child(5) {
-    min-width: 180px;
-    max-width: 180px;
-  }
-  .td:nth-child(6) {
-    min-width: 120px;
-    max-width: 120px;
-  }
-  .td:nth-child(7) {
-    min-width: 60px;
-    max-width: 60px;
+    .td:nth-child(2) {
+      flex-grow: 1;
+      min-width: 300px;
+      max-width: 500px;
+    }
+    .td:nth-child(3) {
+      min-width: 300px;
+      max-width: 500px;
+    }
   }
 }

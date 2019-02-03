@@ -1,10 +1,8 @@
-export const fetchData = () => {
-    return fetch('/table', {
-            method: 'POST',
-            cache: 'no-cache',
-            body: JSON.stringify({
-                mode: 'get',
-                page: 1,
-            }),
-        });
-};
+export const fetchData = (page = 1) => fetch('/table', {
+    method: 'POST',
+    cache: 'no-cache',
+    body: JSON.stringify({
+        mode: 'get',
+        page: page,
+    }),
+});

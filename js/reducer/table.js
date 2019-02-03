@@ -7,6 +7,7 @@ export default function reducer(state = [], action) {
             state = {
                 list: [...action.newState],
                 fetching: false,
+                page: +action.page,
             };
             return state;
         default:

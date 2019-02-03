@@ -16,11 +16,11 @@ const lessLoader = {
     },
 };
 
-const srcPath = path.resolve(__dirname, "./js");
+const srcPath = path.resolve(__dirname, './js');
 
 module.exports = {
-    mode: "development", // this production and webpack.config.js
-    entry:'./js/components/Index/Index.jsx',
+    mode: 'development', // this production and webpack.config.js
+    entry: './js/components/Index/Index.jsx',
     output: {
         path: path.resolve(__dirname, './static'),
         filename: 'bundle.js',
@@ -37,10 +37,10 @@ module.exports = {
                         options: {
                             presets: [
                                 [
-                                    "env", {
+                                    'env', {
                                         modules: false,
                                         targets: {
-                                            browsers: [">0.25%"]
+                                            browsers: ['>0.25%']
                                         },
                                     }
                                 ],
@@ -54,7 +54,7 @@ module.exports = {
                 test: /\.css$/,
                 include: [srcPath],
                 use: [
-                    "style-loader",
+                    'style-loader',
                     cssLoader,
                 ],
             },
@@ -62,7 +62,7 @@ module.exports = {
                 test: /\.less$/,
                 include: [srcPath],
                 use: [
-                    "style-loader",
+                    'style-loader',
                     cssLoader,
                     lessLoader,
                 ],

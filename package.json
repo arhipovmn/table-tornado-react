@@ -34,6 +34,7 @@
   },
   "scripts": {
     "babel": "babel js -d static --progress --presets babel-preset-react",
-    "build": "webpack -p --config webpack.config.js --progress --mode development"
+    "build": "webpack -d --config webpack.config.js --progress --mode development",
+    "build-production": "webpack -p --config webpack.config.js --progress --mode production"
   }
 }
