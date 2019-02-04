@@ -10,6 +10,9 @@ export default function reducer(state = [], action) {
                 page: +action.page,
             };
             return state;
+        case 'SAVE_DATA':
+            state.list[action.data.keyStore][action.data.type] = action.data.value;
+            return Object.assign({}, state);
         default:
             return state;
     }

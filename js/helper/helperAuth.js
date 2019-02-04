@@ -1,0 +1,1 @@
+export const checkAuth = user_class => window.auth && window.user_class === user_class;

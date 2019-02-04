@@ -29,12 +29,13 @@ export default class Auth extends React.Component {
                 password: this.state.password,
             }),
         }).then(response => {
-            response.text().then(text => {
-                if (text === 'ok') {
+            response.json().then(json => {
+                if (json.text === 'ok') {
                     window.auth = true;
+                    window.user_class = json.CLASS;
                     this.props.handlerAuth(window.auth);
                 } else {
-                    throw text;
+                    throw json.text;
                 }
             }).catch(() => {
                 this.setState({fetching: false, error: true});

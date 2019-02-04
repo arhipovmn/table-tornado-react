@@ -1,0 +1,101 @@
+.tr {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  border-bottom: 1px solid #99baca;
+  height: 200px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > .td {
+    border-right: 1px solid #99baca;
+    padding: 0 10px 0 10px;
+    box-sizing: border-box;
+    height: 100%;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 10px 0 10px 0;
+
+      .description {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        flex-grow: 1;
+        padding-bottom: 10px;
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 10px;
+          cursor: pointer;
+          overflow-x: hidden;
+          overflow-y: auto;
+
+          > div {
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+
+          > textarea {
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+          }
+        }
+
+        > div.edit-description {
+          flex-grow: 1;
+        }
+
+        > div:last-child {
+
+          > div {
+            display: flex;
+            flex-direction: row;
+
+            > input {
+              width: 100%;
+            }
+
+            > div:first-child {
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            > div:last-child {
+              padding-left: 10px;
+
+              > span {
+                cursor: pointer;
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > .td:nth-child(1) {
+    width: 60px;
+  }
+
+  > .td:nth-child(2) {
+    flex-grow: 1;
+    width: 400px;
+  }
+
+  > .td:nth-child(3) {
+    width: 400px;
+  }
+}

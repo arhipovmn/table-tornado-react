@@ -4,7 +4,6 @@ import {Redirect} from 'react-router';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux'
 import {BrowserRouter, Route, NavLink} from "react-router-dom";
-
 import classNames from 'classnames';
 
 import reducer from '../../reducer/index';

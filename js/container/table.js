@@ -13,6 +13,4 @@ const mapStateToProps = state => ({
     table: state.table,
 });
 
-const TableContainer = connect(mapStateToProps, mapDispatchToProps)(Table);
-
-export default TableContainer;
+export default connect(mapStateToProps, mapDispatchToProps)(Table);

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import style from './PreLoader.css';
 
@@ -9,7 +10,7 @@ export default class PreLoader extends React.Component {
     }
 
     render() {
-        return <div className={style['pre-loader']}>
+        return <div className={classNames(this.props.className ? this.props.className : null, style['pre-loader'])}>
             {this.props.fetching
                 ? <div className={style['fetching']}>Загрузка...</div> : this.props.children}
         </div>;
@@ -18,6 +19,7 @@ export default class PreLoader extends React.Component {
 
 PreLoader.propTypes = {
     fetching: PropTypes.bool.isRequired,
+    className: PropTypes.string,
 };
 
 PreLoader.defaultProps = {

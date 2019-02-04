@@ -16,7 +16,7 @@ import tornado.ioloop
 
 import pymysql
 
-connection = pymysql.connect(host='localhost',
+connectionMysql = pymysql.connect(host='localhost',
                              user='root',
                              password='',
                              db='master',
@@ -27,7 +27,7 @@ dirname = os.path.dirname(__file__)
 
 
 class BaseHandler(tornado.web.RequestHandler):
-    cursor = connection.cursor()
+    cursor = connectionMysql.cursor()
     user = {}
 
     def get_current_user(self):
@@ -58,7 +58,7 @@ class BaseHandler(tornado.web.RequestHandler):
         if count:
             row = self.cursor.fetchone()
             if row['PASSWORD'] == data['password']:
-                return row['ID']
+                return {'ID': row['ID'], 'CLASS': row['CLASS']}
             else:
                 return 0
 
@@ -82,11 +82,12 @@ class AuthHandler(BaseHandler):
     def post(self):
         data = self.get_json()
         user_id = self.check_auth(data)
-        if user_id:
-            self.set_secure_cookie('auth', str(user_id))
-            self.write('ok')
+        user_id = {'ID': 0} if user_id == 0 else user_id
+        if user_id['ID']:
+            self.set_secure_cookie('auth', str(user_id['ID']))
+            self.write(self.set_json({'text': 'ok', 'CLASS': user_id['CLASS']}))
         else:
-            self.write('error')
+            self.write(self.set_json({'text': 'error'}))
 
 
 class QuitHandler(BaseHandler):
@@ -122,7 +123,7 @@ class TableHandler(BaseHandler):
 
             if count_page:
                 end_limit = factor if data['page'] <= 1 else data['page']*factor
-                count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.`WHERE`, mo.USER_CREATED, '
+                count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.LINK, mo.USER_CREATED, '
                                             'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
                                             'DATE_FORMAT(mo.DATE_COMPLETED, %s) AS DATE_COMPLETED, mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
                                             'FROM master_orders AS mo '
@@ -135,9 +136,19 @@ class TableHandler(BaseHandler):
 
             self.write(self.set_json(row))
         elif data['mode'] == 'save':
-            return False
+
+            user_id = self.current_user
+
+            if self.user['CLASS'] == 5:
+                self.cursor.execute('UPDATE master_orders SET '+data['data']['type']+' = %s WHERE ID = %s',
+                                        [data['data']['value'], data['data']['id']])
+                connectionMysql.commit()
+                self.write('ok')
+            else:
+                self.write('error')
+
         elif data['mode'] == 'delete':
-            return False
+            self.write('ok')
 
 
 settings = {
