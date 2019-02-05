@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import style from './Auth.less';
+import {fetchAuth} from '../../helper/authAjax';
+
 import PreLoader from "../PreLoader/PreLoader.jsx";
+
+import style from './Auth.less';
 
 export default class Auth extends React.Component {
     constructor(props) {
@@ -21,14 +24,7 @@ export default class Auth extends React.Component {
 
         this.setState({fetching: true});
 
-        fetch('/auth', {
-            method: 'POST',
-            cache: 'no-cache',
-            body: JSON.stringify({
-                login: this.state.login,
-                password: this.state.password,
-            }),
-        }).then(response => {
+        fetchAuth(this.state.login, this.state.password).then(response => {
             response.json().then(json => {
                 if (json.text === 'ok') {
                     window.auth = true;
