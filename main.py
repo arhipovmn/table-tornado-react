@@ -33,8 +33,8 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         user_id = self.get_secure_cookie('auth')
         user_id = 0 if user_id is None else int(user_id)
-        count = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
-        if count:
+        user_row = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
+        if user_row:
             self.user = self.cursor.fetchone()
             user_id = self.user['ID']
         else:
@@ -54,8 +54,8 @@ class BaseHandler(tornado.web.RequestHandler):
         self.render('index.html', title='Таблица', auth=auth, user_class=user_class)
 
     def check_auth(self, data):
-        count = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
-        if count:
+        user_row = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
+        if user_row:
             row = self.cursor.fetchone()
             if row['PASSWORD'] == data['password']:
                 return {'ID': row['ID'], 'CLASS': row['CLASS']}
@@ -69,6 +69,15 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def set_json(self, object):
         return tornado.escape.json_encode(object)
+
+    def get_date_order(self, id, date_field):
+        count = self.cursor.execute('SELECT '+date_field+' FROM master_orders WHERE ID = %s;', [id])
+        if count:
+            row = self.cursor.fetchone()
+            return row[date_field]
+        else:
+            return 0
+
 
 class MainHandler(BaseHandler):
     def get(self):
@@ -124,17 +133,23 @@ class TableHandler(BaseHandler):
             if count_page:
                 end_limit = factor if data['page'] <= 1 else data['page']*factor
                 count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.LINK, mo.USER_CREATED, '
-                                            'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
-                                            'DATE_FORMAT(mo.DATE_COMPLETED, %s) AS DATE_COMPLETED, mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
+                                            'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, '
+                                            'DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
+                                            'DATE_FORMAT(mo.DATE_PROCESSED, %s) AS DATE_PROCESSED, '
+                                            'DATE_FORMAT(mo.DATE_COMPLETED, %s) AS DATE_COMPLETED, '
+                                            'mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
                                             'FROM master_orders AS mo '
                                             'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
                                             'LIMIT %s, %s;',
-                                            ["%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", "%Y-%m-%dT%H:%i:%s", end_limit-factor, end_limit])
+                                            ['%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
+                                             '%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
+                                             end_limit-factor, end_limit])
                 if count:
                     row = self.cursor.fetchall()
                     row.append({'page': count_page})
 
             self.write(self.set_json(row))
+
         elif data['mode'] == 'save':
 
             user_id = self.current_user
@@ -146,6 +161,40 @@ class TableHandler(BaseHandler):
                 self.write('ok')
             else:
                 self.write('error')
+
+        elif data['mode'] == 'changeStatus':
+
+            user_id = self.current_user
+
+            if self.user['CLASS'] == 10:
+
+                if data['data']['status'] == 'apply':
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_APPLY = CURRENT_TIMESTAMP '
+                                        'WHERE ID = %s', [data['data']['status'], data['data']['id']])
+                    connectionMysql.commit()
+                    date = self.get_date_order(data['data']['id'], 'DATE_APPLY')
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat()}))
+                    return
+                elif data['data']['status'] == 'processed' and data['data']['trackNumber'] != '':
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = CURRENT_TIMESTAMP, '
+                                        'TRACKNUMBER = %s WHERE ID = %s',
+                                        [data['data']['status'], data['data']['trackNumber'], data['data']['id']])
+                    connectionMysql.commit()
+                    date = self.get_date_order(data['data']['id'], 'DATE_PROCESSED')
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat()}))
+                    return
+                elif data['data']['status'] == 'completed':
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = CURRENT_TIMESTAMP '
+                                        'WHERE ID = %s', [data['data']['status'], data['data']['id']])
+                    connectionMysql.commit()
+                    date = self.get_date_order(data['data']['id'], 'DATE_COMPLETED')
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_COMPLETED', 'date': date.isoformat()}))
+                    return
+
+                self.write(self.set_json({'status': 'error'}))
+            else:
+                self.write(self.set_json({'status': 'error'}))
+
 
         elif data['mode'] == 'delete':
             self.write('ok')

@@ -15,3 +15,12 @@ export const fetchSaveData = data => fetch('/table', {
         data,
     }),
 });
+
+export const fetchChangeStatus = data => fetch('/table', {
+    method: 'POST',
+    cache: 'no-cache',
+    body: JSON.stringify({
+        mode: 'changeStatus',
+        data,
+    }),
+});

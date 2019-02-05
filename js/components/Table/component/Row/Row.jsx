@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import classNames from 'classnames';
 
-import {checkAuth} from '../../../../helper/helperAuth';
+import {checkClass} from '../../../../helper/helperAuth';
 
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
 
@@ -19,14 +19,6 @@ export default class Row extends React.Component {
         };
     }
 
-    static renderDateExecution(row) {
-        return (row.DATE_COMPLETED
-            ? `Дата выполнения: ${row.DATE_COMPLETED}`
-            : (row.DATE_APPLY
-                ? <div>{`Дата принятия: ${row.DATE_APPLY}`}</div>
-                : null));
-    }
-
     onSave(data) {
         this.props.saveData({
             keyStore: this.props.keyStore,
@@ -39,13 +31,43 @@ export default class Row extends React.Component {
     }
 
     editBody() {
-        if (!checkAuth(5)) return;
-        this.setState({editBody: true})
+        if (!checkClass(5)) return;
+        this.setState({editBody: true}, () => this.refs['body'].focus());
     }
 
     editLink() {
-        if (!checkAuth(5)) return;
-        this.setState({editLink: true})
+        if (!checkClass(5)) return;
+        this.setState({editLink: true}, () => this.refs['link'].focus());
+    }
+
+    changeStatus(status) {
+        if(status === 'processed' && !this.refs['trackNumber'].value) return false;
+        this.props.changeStatus({
+            keyStore: this.props.keyStore,
+            id: this.props.row.ID,
+            status,
+            trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value : '',
+            fetching: fetching => this.setState({fetching}),
+        });
+    }
+
+    renderStatus() {
+        if (!checkClass(10)) return null;
+        switch (this.props.row.STATUS) {
+            case 'new':
+                return <div>
+                    <button onClick={this.changeStatus.bind(this, 'apply')}>Принять</button>
+                </div>;
+            case 'apply':
+                return <div>
+                    <input placeholder={'Трек-номер'} defaultValue={''} ref={'trackNumber'} />
+                    <button onClick={this.changeStatus.bind(this, 'processed')}>Обработано</button>
+                </div>;
+            case 'processed':
+                return <div>
+                    <button onClick={this.changeStatus.bind(this, 'completed')}>Выполнено</button>
+                </div>;
+        }
     }
 
     render() {
@@ -72,7 +94,7 @@ export default class Row extends React.Component {
                                         <a href={this.props.row.LINK}
                                            target={'_blank'}>{this.props.row.LINK}</a>
                                     </div>
-                                    <div onClick={this.editLink.bind(this)}>[<span>ред</span>]</div>
+                                    {checkClass(5) ? <div onClick={this.editLink.bind(this)}>[<span>ред</span>]</div> : null}
                                 </div>}
                         </div>
                     </div>
@@ -86,11 +108,22 @@ export default class Row extends React.Component {
             </div>
             <div className={style['td']}>
                 <div>
-                    <div>
-                        Статус: {this.props.row.STATUS}
+                    <div className={style['status']}>
+                        <div>Статус: {this.props.row.STATUS}</div>
+                        {this.renderStatus()}
                     </div>
-                    {Row.renderDateExecution(this.props.row)}
-                    {this.props.row.TRACKNUMBER ? <div>{`Трек-номер: ${this.props.row.TRACKNUMBER}`}</div> : null}
+                    <div>
+                        {this.props.row.TRACKNUMBER
+                            ? <div>Трек-номер:
+                                <a href={`https://gdeposylka.ru/courier/china-ems/tracking/${this.props.row.TRACKNUMBER}`}
+                                   target={'_blank'}>{this.props.row.TRACKNUMBER}</a>
+                            </div> : null}
+                    </div>
+                    <div>
+                        {this.props.row.DATE_APPLY ? <div>{`Дата принятия: ${this.props.row.DATE_APPLY}`}</div> : null}
+                        {this.props.row.DATE_PROCESSED ? <div>{`Дата обработки: ${this.props.row.DATE_PROCESSED}`}</div> : null}
+                        {this.props.row.DATE_COMPLETED ? <div>{`Дата выполнения: ${this.props.row.DATE_COMPLETED}`}</div> : null}
+                    </div>
                 </div>
             </div>
         </PreLoader>;

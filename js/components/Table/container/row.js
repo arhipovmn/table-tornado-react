@@ -3,13 +3,14 @@ import {connect} from 'react-redux';
 
 import Row from '../component/Row/Row.jsx';
 
-import {saveData} from "../../../action/table";
+import {saveData, changeStatus} from "../../../action/table";
 
-const mapDispatchToProps = (dispatch, getState) => ({
+const mapDispatchToProps = dispatch => ({
     saveData: data => saveData(dispatch, data),
+    changeStatus: data => changeStatus(dispatch, data),
 });
 
-const mapStateToProps = (state, getState) => ({
+const mapStateToProps = state => ({
     table: state.table,
 });
 
