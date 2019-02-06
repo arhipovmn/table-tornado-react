@@ -28,7 +28,7 @@ dirname = os.path.dirname(__file__)
 
 class BaseHandler(tornado.web.RequestHandler):
     cursor = connectionMysql.cursor()
-    user = {}
+    user = {'ID': 0, 'LOGIN': '', 'PASSWORD': '', 'CLASS': 0}
 
     def get_current_user(self):
         user_id = self.get_secure_cookie('auth')
@@ -112,12 +112,18 @@ class TableHandler(BaseHandler):
     def post(self):
         data = self.get_json()
 
+        self.get_current_user()
+
         if data['mode'] == 'get':
             factor = 2
             row = {}
             count_page = 0
+            where_for_user = ''
 
-            count = self.cursor.execute('SELECT COUNT(ID) as COUNT FROM master_orders')
+            if self.user['CLASS'] == 5:
+                where_for_user = 'WHERE mo.USER_CREATED = %s ' % self.user['ID']
+
+            count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo %s' % where_for_user)
 
             if count:
                 row_count = self.cursor.fetchone()
@@ -140,6 +146,9 @@ class TableHandler(BaseHandler):
                                             'mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
                                             'FROM master_orders AS mo '
                                             'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
+                                            +where_for_user+
+                                            'ORDER BY FIELD(mo.STATUS, \'new\', \'apply\', \'processed\', \'completed\') ASC, '
+                                            'mo.DATE_CREATED DESC '
                                             'LIMIT %s, %s;',
                                             ['%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
                                              '%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
@@ -152,8 +161,6 @@ class TableHandler(BaseHandler):
 
         elif data['mode'] == 'save':
 
-            user_id = self.current_user
-
             if self.user['CLASS'] == 5:
                 self.cursor.execute('UPDATE master_orders SET '+data['data']['type']+' = %s WHERE ID = %s',
                                         [data['data']['value'], data['data']['id']])
@@ -163,8 +170,6 @@ class TableHandler(BaseHandler):
                 self.write('error')
 
         elif data['mode'] == 'changeStatus':
-
-            user_id = self.current_user
 
             if self.user['CLASS'] == 10:
 
