@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {fetchAuth} from '../../helper/authAjax';
 
 import PreLoader from "../PreLoader/PreLoader.jsx";
+import {popupAlert} from "../../components/PopupAlert/PopupAlert.jsx";
 
 import style from './Auth.less';
 
@@ -33,10 +34,18 @@ export default class Auth extends React.Component {
                 } else {
                     throw json.text;
                 }
-            }).catch(() => {
-                this.setState({fetching: false, error: true});
+            }).catch(error => {
+                popupAlert({
+                    text: error,
+                    onKo: () => {
+                        this.setState({fetching: false, error: true});
+                    },
+                });
             });
         }).catch(error => {
+            popupAlert({
+                text: error,
+            });
             console.error('not response');
         });
     }

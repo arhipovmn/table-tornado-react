@@ -4,8 +4,10 @@ import ReactDOM from 'react-dom';
 import {fetchGetData, fetchSaveData} from '../../helper/tableAjax';
 
 import PreLoader from '../PreLoader/PreLoader.jsx';
+import {popupAlert} from '../PopupAlert/PopupAlert.jsx';
 
 import style from './PopupAdd.less';
+import PropTypes from "prop-types";
 
 class Add extends React.Component {
     constructor(props) {
@@ -22,49 +24,63 @@ class Add extends React.Component {
 
     submit() {
 
-        ::this.setState({fetching: true}, () => {
-            fetchSaveData({
-                number: this.refs['number'].value,
-                description: this.refs['description'].value,
-                link: this.refs['link'].value,
-            }).then(response => {
+        ::this.setState({fetching: true});
 
-                response.text().then(text => {
-                    if (!Object.keys(text).length) throw 'empty';
+        fetchSaveData({
+            number: this.refs['number'].value,
+            description: this.refs['description'].value,
+            link: this.refs['link'].value,
+        }).then(response => {
 
-                    if (text === 'ok') {
+            response.text().then(text => {
+                if (!Object.keys(text).length) throw 'empty';
 
-                        fetchGetData(1).then(response => {
-                            response.json().then(json => {
-                                if (!Object.keys(json).length) throw 'empty';
+                if (text === 'ok') {
 
-                                window.store.dispatch({
-                                    type: 'GET_DATA',
-                                    newState: json,
-                                    page: 1,
-                                });
+                    fetchGetData(1).then(response => {
+                        response.json().then(json => {
+                            if (!Object.keys(json).length) throw 'empty';
 
-                            }).catch(error => {
-                                console.error(error);
+                            window.store.dispatch({
+                                type: 'GET_DATA',
+                                newState: json,
+                                page: 1,
                             });
+
                         }).catch(error => {
-                            console.error(`not response ${error}`);
+                            popupAlert({
+                                text: error,
+                                onYes: ::this.popupClose,
+                            });
+                            console.error(error);
                         });
+                    }).catch(error => {
+                        popupAlert({
+                            text: error,
+                            onYes: ::this.popupClose,
+                        });
+                        console.error(`not response ${error}`);
+                    });
 
-                        ::this.popupClose();
-
-                    } else {
-                        throw text;
-                    }
-
-                }).catch(error => {
                     ::this.popupClose();
-                    console.error(error);
-                });
+
+                } else {
+                    throw text;
+                }
+
             }).catch(error => {
-                ::this.popupClose();
-                console.error(`not response ${error}`);
+                popupAlert({
+                    text: error,
+                    onYes: ::this.popupClose,
+                });
+                console.error(error);
             });
+        }).catch(error => {
+            popupAlert({
+                text: error,
+                onYes: ::this.popupClose,
+            });
+            console.error(`not response ${error}`);
         });
     }
 
@@ -108,8 +124,12 @@ class Add extends React.Component {
     };
 }
 
-export const popupAdd = e => {
+export const popupAdd = () => {
     const div = document.createElement('div');
     div.classList.add(style['fon']);
     ReactDOM.render(<Add div={div}/>, document.body.appendChild(div))
+};
+
+PreLoader.propTypes = {
+    div: PropTypes.object.isRequired,
 };

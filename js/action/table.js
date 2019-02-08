@@ -1,4 +1,5 @@
 import {fetchGetData, fetchSaveData, fetchChangeStatus} from '../helper/tableAjax';
+import {popupAlert} from "../components/PopupAlert/PopupAlert.jsx";
 
 export const getData = (dispatch, page = 1) => {
     dispatch({
@@ -14,9 +15,15 @@ export const getData = (dispatch, page = 1) => {
                 page: page,
             });
         }).catch(error => {
+            popupAlert({
+                text: error,
+            });
             console.error(error);
         });
     }).catch(error => {
+        popupAlert({
+            text: error,
+        });
         console.error(`not response ${error}`);
     });
 };
@@ -40,11 +47,21 @@ export const saveData = (dispatch, data) => {
                 throw text;
             }
         }).catch(error => {
-            data.fetching(false);
+            popupAlert({
+                text: error,
+                onKo: () => {
+                    data.fetching(false);
+                },
+            });
             console.error(error);
         });
     }).catch(error => {
-        data.fetching(false);
+        popupAlert({
+            text: error,
+            onKo: () => {
+                data.fetching(false);
+            },
+        });
         console.error(`not response ${error}`);
     });
 };
@@ -67,11 +84,21 @@ export const changeStatus = (dispatch, data) => {
             });
             data.fetching(false);
         }).catch(error => {
-            data.fetching(false);
+            popupAlert({
+                text: error,
+                onKo: () => {
+                    data.fetching(false);
+                },
+            });
             console.error(error);
         });
     }).catch(error => {
-        data.fetching(false);
+        popupAlert({
+            text: error,
+            onKo: () => {
+                data.fetching(false);
+            },
+        });
         console.error(`not response ${error}`);
     });
 };
