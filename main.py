@@ -138,7 +138,7 @@ class TableHandler(BaseHandler):
 
             if count_page:
                 end_limit = factor if data['page'] <= 1 else data['page']*factor
-                count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.BODY, mo.LINK, mo.USER_CREATED, '
+                count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.DESCRIPTION, mo.LINK, mo.USER_CREATED, '
                                             'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, '
                                             'DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
                                             'DATE_FORMAT(mo.DATE_PROCESSED, %s) AS DATE_PROCESSED, '
@@ -162,9 +162,17 @@ class TableHandler(BaseHandler):
         elif data['mode'] == 'save':
 
             if self.user['CLASS'] == 5:
-                self.cursor.execute('UPDATE master_orders SET '+data['data']['type']+' = %s WHERE ID = %s',
+
+                if data['data'].get('id'):
+                    self.cursor.execute('UPDATE master_orders SET '+data['data']['type']+' = %s WHERE ID = %s',
                                         [data['data']['value'], data['data']['id']])
+                else:
+                    self.cursor.execute('INSERT INTO master_orders (NUMBER, DESCRIPTION, LINK, USER_CREATED, DATE_CREATED) '
+                                        'VALUE (%s, %s, %s, %s, CURRENT_TIMESTAMP)',
+                                        [data['data']['number'], data['data']['description'], data['data']['link'],
+                                         self.user['ID']])
                 connectionMysql.commit()
+
                 self.write('ok')
             else:
                 self.write('error')

@@ -19,6 +19,7 @@
     "babel-cli": "latest",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
+    "babel-plugin-transform-function-bind": "^6.22.0",
     "babel-polyfill": "latest",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "latest",
@@ -34,7 +35,7 @@
   },
   "scripts": {
     "babel": "babel js -d static --progress --presets babel-preset-react",
-    "build": "webpack -d --config webpack.config.js --progress --mode development",
+    "build": "webpack -p --config webpack.config.js --progress --mode development",
     "build-production": "webpack -p --config webpack.config.js --progress --mode production"
   }
 }

@@ -43,7 +43,7 @@ export default class Auth extends React.Component {
 
     render() {
         return <PreLoader fetching={this.state.fetching}>
-            <form className={style['auth']} onSubmit={this.onSubmit.bind(this)}>
+            <form className={style['auth']} onSubmit={::this.onSubmit}>
                 <label>
                     <span>Логин: </span>
                     <input type={'text'} value={this.state.login}

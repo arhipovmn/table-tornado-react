@@ -1,0 +1,59 @@
+.fon {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100px;
+  left: calc(50% - 200px);
+  width: 400px;
+  border-radius: 3px;
+  border: 1px solid #99baca;
+  background-color: #f9f9f9;
+  padding: 15px 15px 15px 15px;
+
+  > div {
+    min-height: 150px;
+
+    > .close {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      cursor: pointer;
+
+      > span {
+        text-decoration: underline;
+      }
+    }
+
+    > .name {
+      font-weight: bold;
+      padding-bottom: 10px;
+    }
+
+    > .field {
+      padding-bottom: 15px;
+
+      > textarea, input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      > textarea {
+        height: 75px;
+      }
+    }
+
+    > .button {
+      align-self: flex-end;
+    }
+  }
+
+}

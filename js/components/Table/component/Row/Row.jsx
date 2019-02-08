@@ -13,7 +13,7 @@ export default class Row extends React.Component {
         super(props);
 
         this.state = {
-            editBody: false,
+            editDescription: false,
             editLink: false,
             fetching: false,
         };
@@ -30,9 +30,9 @@ export default class Row extends React.Component {
         this.setState({[`edit${data.type.substr(0, 1).toUpperCase()}${data.type.substr(1).toLowerCase()}`]: false});
     }
 
-    editBody() {
+    editDescription() {
         if (!checkClass(5)) return;
-        this.setState({editBody: true}, () => this.refs['body'].focus());
+        this.setState({editDescription: true}, () => this.refs['description'].focus());
     }
 
     editLink() {
@@ -41,7 +41,7 @@ export default class Row extends React.Component {
     }
 
     changeStatus(status) {
-        if(status === 'processed' && !this.refs['trackNumber'].value) return false;
+        if (status === 'processed' && !this.refs['trackNumber'].value) return false;
         this.props.changeStatus({
             keyStore: this.props.keyStore,
             id: this.props.row.ID,
@@ -56,16 +56,16 @@ export default class Row extends React.Component {
         switch (this.props.row.STATUS) {
             case 'new':
                 return <div>
-                    <button onClick={this.changeStatus.bind(this, 'apply')}>Принять</button>
+                    <button onClick={() => ::this.changeStatus('apply')}>Принять</button>
                 </div>;
             case 'apply':
                 return <div>
-                    <input placeholder={'Трек-номер'} defaultValue={''} ref={'trackNumber'} />
-                    <button onClick={this.changeStatus.bind(this, 'processed')}>Обработано</button>
+                    <input placeholder={'Трек-номер'} defaultValue={''} ref={'trackNumber'}/>
+                    <button onClick={() => ::this.changeStatus('processed')}>Обработано</button>
                 </div>;
             case 'processed':
                 return <div>
-                    <button onClick={this.changeStatus.bind(this, 'completed')}>Выполнено</button>
+                    <button onClick={() => ::this.changeStatus('completed')}>Выполнено</button>
                 </div>;
         }
     }
@@ -78,23 +78,29 @@ export default class Row extends React.Component {
             <div className={style['td']}>
                 <div>
                     <div className={style['description']}>
-                        <div className={classNames(this.state.editBody ? style['edit-description'] : false)}
-                             onDoubleClick={this.editBody.bind(this)}>
-                            {this.state.editBody
-                                ? <textarea defaultValue={this.props.row.BODY} ref={'body'}
-                                            onBlur={this.onSave.bind(this, {type: 'BODY'})}/>
-                                : <div>Описание заказа: {this.props.row.BODY}</div>}
+                        <div className={classNames(this.state.editDescription ? style['edit-description'] : false)}
+                             style={checkClass(5) ? {cursor: 'pointer'} : {}}
+                             onDoubleClick={::this.editDescription}>
+                            {this.state.editDescription
+                                ? <textarea defaultValue={this.props.row.DESCRIPTION} ref={'description'}
+                                            onBlur={() => ::this.onSave({type: 'DESCRIPTION'})}
+                                            onKeyDown={e => e.key === 'Enter' && e.ctrlKey
+                                                ? ::this.onSave({type: 'DESCRIPTION'}) : false}/>
+                                : <div>Описание заказа: {this.props.row.DESCRIPTION}</div>}
                         </div>
                         <div>
                             {this.state.editLink
                                 ? <input defaultValue={this.props.row.LINK} ref={'link'}
-                                         onBlur={this.onSave.bind(this, {type: 'LINK'})}/>
+                                         onBlur={() => ::this.onSave({type: 'LINK'})}
+                                         onKeyDown={e => ((e.key === 'Enter' && e.ctrlKey) || e.key === 'Enter')
+                                             ? ::this.onSave({type: 'LINK'}) : false}/>
                                 : <div>
                                     <div>
                                         <a href={this.props.row.LINK}
                                            target={'_blank'}>{this.props.row.LINK}</a>
                                     </div>
-                                    {checkClass(5) ? <div onClick={this.editLink.bind(this)}>[<span>ред</span>]</div> : null}
+                                    {checkClass(5) ?
+                                        <div onClick={::this.editLink}>[<span>ред</span>]</div> : null}
                                 </div>}
                         </div>
                     </div>
@@ -121,8 +127,10 @@ export default class Row extends React.Component {
                     </div>
                     <div>
                         {this.props.row.DATE_APPLY ? <div>{`Дата принятия: ${this.props.row.DATE_APPLY}`}</div> : null}
-                        {this.props.row.DATE_PROCESSED ? <div>{`Дата обработки: ${this.props.row.DATE_PROCESSED}`}</div> : null}
-                        {this.props.row.DATE_COMPLETED ? <div>{`Дата выполнения: ${this.props.row.DATE_COMPLETED}`}</div> : null}
+                        {this.props.row.DATE_PROCESSED ?
+                            <div>{`Дата обработки: ${this.props.row.DATE_PROCESSED}`}</div> : null}
+                        {this.props.row.DATE_COMPLETED ?
+                            <div>{`Дата выполнения: ${this.props.row.DATE_COMPLETED}`}</div> : null}
                     </div>
                 </div>
             </div>
@@ -135,7 +143,7 @@ Row.propTypes = {
     row: PropTypes.shape({
         ID: PropTypes.number.isRequired,
         NUMBER: PropTypes.number.isRequired,
-        BODY: PropTypes.string.isRequired,
+        DESCRIPTION: PropTypes.string.isRequired,
         LINK: PropTypes.string.isRequired,
         DATE_CREATED: PropTypes.string.isRequired,
         DATE_APPLY: PropTypes.string,
@@ -151,7 +159,7 @@ Row.defaultProps = {
     row: {
         ID: 0,
         NUMBER: 0,
-        BODY: '',
+        DESCRIPTION: '',
         LINK: '',
         DATE_CREATED: '',
         DATE_APPLY: '',

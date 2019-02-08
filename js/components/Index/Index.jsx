@@ -11,6 +11,7 @@ import defaultStore from '../../reducer/initStore';
 
 import Table from '../../container/table';
 import Auth from '../Auth/Auth.jsx';
+import {popupAdd} from '../PopupAdd/PopupAdd.jsx';
 
 import style from './Index.less';
 
@@ -36,6 +37,7 @@ class Index extends React.Component {
                                   isActive={(match, location) => (match ? true : location.pathname.includes('/page/'))}
                                   activeClassName={style['selected']}>Таблица</NavLink>]
                     </div>
+                    {this.state.auth ? <div><button onClick={e => popupAdd(e)}>Добавить заказ</button></div> : null}
                     <div>[{this.state.auth
                         ? <a href={'/quit'}>Выход</a>
                         : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
@@ -46,17 +48,17 @@ class Index extends React.Component {
                     <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
                     <Route path={'/auth'} render={() => this.state.auth
                         ? <Redirect to={'/'}/>
-                        : <Auth handlerAuth={this.handlerAuth.bind(this)}/>}/>
+                        : <Auth handlerAuth={::this.handlerAuth}/>}/>
                 </div>
             </div>
         </BrowserRouter>;
     };
 }
 
-const store = createStore(reducer, defaultStore, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+window.store = createStore(reducer, defaultStore, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 if (document.getElementById('index')) {
-    ReactDOM.render(<Provider store={store}>
+    ReactDOM.render(<Provider store={window.store}>
         <Index/>
     </Provider>, document.getElementById('index'));
 }
