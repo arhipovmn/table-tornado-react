@@ -23,64 +23,34 @@ class Add extends React.Component {
     }
 
     submit() {
-
-        ::this.setState({fetching: true});
+        this.setState({fetching: true});
 
         fetchSaveData({
             number: this.refs['number'].value,
             description: this.refs['description'].value,
             link: this.refs['link'].value,
-        }).then(response => {
-
-            response.text().then(text => {
-                if (!Object.keys(text).length) throw 'empty';
-
+        }).then(response => response.text())
+            .then(text => {
+                ::this.popupClose();
                 if (text === 'ok') {
-
-                    fetchGetData(1).then(response => {
-                        response.json().then(json => {
-                            if (!Object.keys(json).length) throw 'empty';
-
-                            window.store.dispatch({
-                                type: 'GET_DATA',
-                                newState: json,
-                                page: 1,
-                            });
-
-                        }).catch(error => {
-                            popupAlert({
-                                text: error,
-                                onYes: ::this.popupClose,
-                            });
-                            console.error(error);
-                        });
-                    }).catch(error => {
-                        popupAlert({
-                            text: error,
-                            onYes: ::this.popupClose,
-                        });
-                        console.error(`not response ${error}`);
-                    });
-
-                    ::this.popupClose();
-
+                    return fetchGetData(1);
                 } else {
                     throw text;
                 }
-
-            }).catch(error => {
-                popupAlert({
-                    text: error,
-                    onYes: ::this.popupClose,
+            }).then(response => response.json())
+            .then(json => {
+                if (!Object.keys(json).length) throw 'empty';
+                window.store.dispatch({
+                    type: 'GET_DATA',
+                    newState: json,
+                    page: 1,
                 });
-                console.error(error);
-            });
-        }).catch(error => {
+            }).catch(error => {
             popupAlert({
                 text: error,
-                onYes: ::this.popupClose,
+                onOk: ::this.popupClose,
             });
-            console.error(`not response ${error}`);
+            console.error(error);
         });
     }
 

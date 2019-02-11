@@ -37,10 +37,14 @@ class Index extends React.Component {
                                   isActive={(match, location) => (match ? true : location.pathname.includes('/page/'))}
                                   activeClassName={style['selected']}>Таблица</NavLink>]
                     </div>
-                    {this.state.auth ? <div><button onClick={e => popupAdd(e)}>Добавить заказ</button></div> : null}
-                    <div>[{this.state.auth
-                        ? <a href={'/quit'}>Выход</a>
-                        : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
+                    {this.state.auth && window.user_class === 5
+                        ? <div>
+                            <button onClick={e => popupAdd(e)}>Добавить заказ</button>
+                        </div> : null}
+                    <div>{window.user_name ? `Добро пожаловать, ${window.user_name}! ` : null}
+                        [{this.state.auth
+                            ? <a href={'/quit'}>Выход</a>
+                            : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
                     </div>
                 </div>
                 <div className={style['content']}>

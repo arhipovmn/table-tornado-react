@@ -45,20 +45,18 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def default_response(self):
         user_id = 0
-        user_class = 0
         if self.current_user:
             user_id = tornado.escape.xhtml_escape(str(self.current_user))
-            user_class = self.user['CLASS']
 
         auth = 'true' if bool(user_id) == True else ''
-        self.render('index.html', title='Таблица', auth=auth, user_class=user_class)
+        self.render('index.html', title='Таблица', auth=auth, user_name=self.user['LOGIN'], user_class=self.user['CLASS'])
 
     def check_auth(self, data):
         user_row = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
         if user_row:
             row = self.cursor.fetchone()
             if row['PASSWORD'] == data['password']:
-                return {'ID': row['ID'], 'CLASS': row['CLASS']}
+                return {'ID': row['ID'], 'LOGIN': row['LOGIN'], 'CLASS': row['CLASS']}
             else:
                 return 0
 
@@ -94,7 +92,7 @@ class AuthHandler(BaseHandler):
         user_id = {'ID': 0} if user_id == 0 else user_id
         if user_id['ID']:
             self.set_secure_cookie('auth', str(user_id['ID']))
-            self.write(self.set_json({'text': 'ok', 'CLASS': user_id['CLASS']}))
+            self.write(self.set_json({'text': 'ok', 'LOGIN': user_id['LOGIN'], 'CLASS': user_id['CLASS']}))
         else:
             self.write(self.set_json({'text': 'error'}))
 
@@ -152,7 +150,7 @@ class TableHandler(BaseHandler):
                                             'LIMIT %s, %s;',
                                             ['%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
                                              '%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
-                                             end_limit-factor, end_limit])
+                                             (end_limit-factor), factor])
                 if count:
                     row = self.cursor.fetchall()
                     row.append({'page': count_page})
