@@ -37,7 +37,8 @@ class Add extends React.Component {
                 } else {
                     throw text;
                 }
-            }).then(response => response.json())
+            })
+            .then(response => response.json())
             .then(json => {
                 if (!Object.keys(json).length) throw 'empty';
                 window.store.dispatch({

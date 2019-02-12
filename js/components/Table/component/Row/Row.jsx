@@ -3,8 +3,11 @@ import PropTypes from "prop-types";
 import classNames from 'classnames';
 
 import {checkClass} from '../../../../helper/helperAuth';
+import {getNameStatus} from '../../../../helper/helperStatus';
+
 
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
+import {popupAlert} from "../../../PopupAlert/PopupAlert.jsx";
 
 import style from './Row.less';
 
@@ -41,14 +44,30 @@ export default class Row extends React.Component {
     }
 
     changeStatus(status) {
-        if (status === 'processed' && !this.refs['trackNumber'].value) return false;
-        this.props.changeStatus({
-            keyStore: this.props.keyStore,
-            id: this.props.row.ID,
-            status,
-            trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value : '',
-            fetching: fetching => this.setState({fetching}),
-        });
+        if (status === 'processed' && !this.refs['trackNumber'].value) {
+            popupAlert({
+                text: <span>Не указан трек-номер!</span>,
+                onOk: () => {
+                },
+            });
+        } else {
+            popupAlert({
+                text: <span>Вы действительно хотите сменить статус на
+                <b>{` ${getNameStatus(status, false)} `}</b>
+                для заказа <b>#{this.props.row.NUMBER}</b></span>,
+                onYes: () => {
+                    this.props.changeStatus({
+                        keyStore: this.props.keyStore,
+                        id: this.props.row.ID,
+                        status,
+                        trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value : '',
+                        fetching: fetching => this.setState({fetching}),
+                    });
+                },
+                onNo: () => {
+                },
+            });
+        }
     }
 
     renderStatus() {
@@ -56,16 +75,16 @@ export default class Row extends React.Component {
         switch (this.props.row.STATUS) {
             case 'new':
                 return <div>
-                    <button onClick={() => ::this.changeStatus('apply')}>Принять</button>
+                    <button onClick={() => ::this.changeStatus('apply')}>{getNameStatus('apply')}</button>
                 </div>;
             case 'apply':
                 return <div>
-                    <input placeholder={'Трек-номер'} defaultValue={''} ref={'trackNumber'}/>
-                    <button onClick={() => ::this.changeStatus('processed')}>Обработано</button>
+                    <input placeholder={'трек-номер'} defaultValue={''} ref={'trackNumber'}/>
+                    <button onClick={() => ::this.changeStatus('processed')}>{getNameStatus('processed')}</button>
                 </div>;
             case 'processed':
                 return <div>
-                    <button onClick={() => ::this.changeStatus('completed')}>Выполнено</button>
+                    <button onClick={() => ::this.changeStatus('completed')}>{getNameStatus('completed')}</button>
                 </div>;
         }
     }
@@ -115,7 +134,7 @@ export default class Row extends React.Component {
             <div className={style['td']}>
                 <div>
                     <div className={style['status']}>
-                        <div>Статус: {this.props.row.STATUS}</div>
+                        <div>Статус: {getNameStatus(this.props.row.STATUS)}</div>
                         {this.renderStatus()}
                     </div>
                     <div>

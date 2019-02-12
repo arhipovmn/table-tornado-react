@@ -25,8 +25,9 @@ export default class Auth extends React.Component {
 
         this.setState({fetching: true});
 
-        fetchAuth(this.state.login, this.state.password).then(response => {
-            response.json().then(json => {
+        fetchAuth(this.state.login, this.state.password)
+            .then(response => response.json())
+            .then(json => {
                 if (json.text === 'ok') {
                     window.auth = true;
                     window.user_name = json.LOGIN;
@@ -36,18 +37,13 @@ export default class Auth extends React.Component {
                     throw json.text;
                 }
             }).catch(error => {
-                popupAlert({
-                    text: error,
-                    onKo: () => {
-                        this.setState({fetching: false, error: true});
-                    },
-                });
-            });
-        }).catch(error => {
             popupAlert({
                 text: error,
+                onKo: () => {
+                    this.setState({fetching: false, error: true});
+                },
             });
-            console.error('not response');
+            console.error(error);
         });
     }
 

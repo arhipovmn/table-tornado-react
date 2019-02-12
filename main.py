@@ -145,8 +145,7 @@ class TableHandler(BaseHandler):
                                             'FROM master_orders AS mo '
                                             'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
                                             +where_for_user+
-                                            'ORDER BY FIELD(mo.STATUS, \'new\', \'apply\', \'processed\', \'completed\') ASC, '
-                                            'mo.DATE_CREATED DESC '
+                                            'ORDER BY mo.DATE_CREATED DESC '
                                             'LIMIT %s, %s;',
                                             ['%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
                                              '%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',

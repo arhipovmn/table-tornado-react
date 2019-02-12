@@ -36,16 +36,21 @@ class Index extends React.Component {
                         [<NavLink exact to={'/'}
                                   isActive={(match, location) => (match ? true : location.pathname.includes('/page/'))}
                                   activeClassName={style['selected']}>Таблица</NavLink>]
+                        {!this.state.auth
+                            ? <span> [<NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>]</span>
+                            : null}
                     </div>
-                    {this.state.auth && window.user_class === 5
+                    <div>
+                        {this.state.auth && window.user_class === 5
+                            ? <button onClick={e => popupAdd(e)}>Добавить заказ</button>
+                            : null}
+                    </div>
+                    {this.state.auth
                         ? <div>
-                            <button onClick={e => popupAdd(e)}>Добавить заказ</button>
-                        </div> : null}
-                    <div>{window.user_name ? `Добро пожаловать, ${window.user_name}! ` : null}
-                        [{this.state.auth
-                            ? <a href={'/quit'}>Выход</a>
-                            : <NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>}]
-                    </div>
+                            Добро пожаловать, <b>{window.user_name}</b>!
+                            [<a href={'/quit'}>Выход</a>]
+                        </div>
+                        : <div/>}
                 </div>
                 <div className={style['content']}>
                     <Route exact path={'/'} render={props => <Table {...props}/>}/>
