@@ -2,7 +2,7 @@ import React from 'react';
 
 import PreLoader from '../PreLoader/PreLoader.jsx';
 import Paginator from '../Paginator/Paginator.jsx';
-import Row from  './container/row';
+import Row from './container/row';
 
 import style from './Table.less';
 
@@ -11,24 +11,15 @@ export default class Table extends React.Component {
         super(props);
 
         props.getData(this.props.match.params.hasOwnProperty('key') ? +this.props.match.params.key : 1);
-        this.componentMount = true;
     };
 
-    componentDidUpdate(){
-        if (!this.componentMount && this.props.match.params.key !== undefined && this.props.table.page !== +this.props.match.params.key) {
-            this.props.getData(this.props.match.params.hasOwnProperty('key') ? +this.props.match.params.key : 1);
-            this.componentMount = true;
-        } else {
-            this.componentMount = false;
-        }
-    }
-
     render() {
-        const pageCount = this.props.table.list.length ? this.props.table.list[(this.props.table.list.length - 1)].page : 1;
+        const countPage = this.props.table.list.length ? this.props.table.list[(this.props.table.list.length - 1)].countPage : 1;
 
         return <PreLoader fetching={this.props.table.fetching}>
             <div className={style['center']}>
-                <Paginator page={this.props.table.page} pageCount={pageCount}/>
+                <Paginator currentPage={this.props.table.currentPage} countPage={countPage}
+                           getData={this.props.getData}/>
             </div>
             <div className={style['center']}>
                 <div className={style['table']}>
@@ -44,13 +35,16 @@ export default class Table extends React.Component {
                         </div>
                     </div>
                     {this.props.table.list.map((row, key) => {
-                        if (row.hasOwnProperty('page')) return null;
-                        return <Row row={row} key={key} keyStore={key}/>
+                        if (row.hasOwnProperty('countPage')) return null;
+                        return <Row key={key} row={row}
+                                    keyStore={key}
+                                    currentPage={this.props.table.currentPage}/>
                     })}
                 </div>
             </div>
             <div className={style['center']}>
-                <Paginator page={this.props.table.page} pageCount={pageCount}/>
+                <Paginator currentPage={this.props.table.currentPage} countPage={countPage}
+                           getData={this.props.getData}/>
             </div>
         </PreLoader>;
     };

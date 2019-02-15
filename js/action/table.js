@@ -1,19 +1,19 @@
-import {fetchGetData, fetchSaveData, fetchChangeStatus} from '../helper/tableAjax';
+import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow} from '../helper/tableAjax';
 import {popupAlert} from "../components/PopupAlert/PopupAlert.jsx";
 
-export const getData = (dispatch, page = 1) => {
+export const getData = (dispatch, currentPage = 1) => {
     dispatch({
         type: 'FETCHING',
         fetching: true,
     });
-    fetchGetData(page)
+    fetchGetData(currentPage)
         .then(response => response.json())
         .then(json => {
             if (!Object.keys(json).length) throw 'empty';
             dispatch({
                 type: 'GET_DATA',
                 newState: json,
-                page: page,
+                currentPage: currentPage,
             });
         }).catch(error => {
         popupAlert({
@@ -30,7 +30,6 @@ export const saveData = (dispatch, data) => {
         type: data.type,
         value: data.value,
     }).then(response => response.text()).then(text => {
-        if (!Object.keys(text).length) throw 'empty';
         if (text === 'ok') {
             dispatch({
                 type: 'SAVE_DATA',
@@ -73,6 +72,28 @@ export const changeStatus = (dispatch, data) => {
             onKo: () => {
                 data.fetching(false);
             },
+        });
+        console.error(error);
+    });
+};
+
+export const deleteRow = (dispatch, data) => {
+    dispatch({
+        type: 'FETCHING',
+        fetching: true,
+    });
+    fetchDeleteRow(data)
+        .then(response => response.json())
+        .then(json => {
+            if (!Object.keys(json).length) throw 'empty';
+            dispatch({
+                type: 'GET_DATA',
+                newState: json.list,
+                currentPage: json.currentPage,
+            });
+        }).catch(error => {
+        popupAlert({
+            text: error,
         });
         console.error(error);
     });

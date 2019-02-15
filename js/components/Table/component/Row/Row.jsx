@@ -89,10 +89,25 @@ export default class Row extends React.Component {
         }
     }
 
+    deleteRow() {
+        popupAlert({
+            text: <span>Вы действительно хотите удалить заказа <b>#{this.props.row.NUMBER}</b></span>,
+            onYes: () => {
+                this.props.deleteRow({
+                    id: this.props.row.ID,
+                    currentPage: this.props.currentPage,
+                });
+            },
+            onNo: () => {
+            },
+        });
+    }
+
     render() {
         return <PreLoader className={style['tr']} fetching={this.state.fetching}>
             <div className={style['td']}>
                 <div>{this.props.row.NUMBER}</div>
+                {window.auth ? <div className={style['delete']} onClick={::this.deleteRow}/> : null}
             </div>
             <div className={style['td']}>
                 <div>
@@ -170,7 +185,8 @@ Row.propTypes = {
         DATE_COMPLETED: PropTypes.string,
         TRACKNUMBER: PropTypes.string,
         STATUS: PropTypes.string.isRequired,
-    }).isRequired
+    }).isRequired,
+    currentPage: PropTypes.number.isRequired,
 };
 
 Row.defaultProps = {
@@ -186,5 +202,6 @@ Row.defaultProps = {
         DATE_COMPLETED: '',
         TRACKNUMBER: '',
         STATUS: '',
-    }
+    },
+    currentPage: 1,
 };

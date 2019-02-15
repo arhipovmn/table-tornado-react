@@ -2,7 +2,7 @@ const defaultStore = {
     table: {
         list: [],
         fetching: false,
-        page: 1,
+        currentPage: 1,
     },
 };
 

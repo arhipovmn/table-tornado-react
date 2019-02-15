@@ -44,7 +44,7 @@ class Add extends React.Component {
                 window.store.dispatch({
                     type: 'GET_DATA',
                     newState: json,
-                    page: 1,
+                    currentPage: 1,
                 });
             }).catch(error => {
             popupAlert({

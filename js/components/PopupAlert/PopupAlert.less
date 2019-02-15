@@ -13,14 +13,14 @@
   position: absolute;
   top: 100px;
   left: calc(50% - 200px);
-  width: 400px;
+  min-width: 250px;
+  max-width: 400px;
   border-radius: 3px;
   border: 1px solid #99baca;
   background-color: #f9f9f9;
-  padding: 15px 0 15px 15px;
+  padding: 15px 15px 15px 15px;
 
   > div {
-    padding: 0 15px 0 0;
 
     > button {
       margin-left: 10px;
@@ -28,11 +28,8 @@
   }
 
   > div:last-child {
-    align-self: flex-end;
-  }
-
-  > div:last-child {
     align-self: center;
+    padding: 10px 0 0 0;
   }
 
 }

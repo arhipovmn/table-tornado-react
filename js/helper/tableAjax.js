@@ -1,9 +1,9 @@
-export const fetchGetData = (page = 1) => fetch('/table', {
+export const fetchGetData = (currentPage = 1) => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
     body: JSON.stringify({
         mode: 'get',
-        page: page,
+        currentPage: currentPage,
     }),
 });
 
@@ -11,7 +11,7 @@ export const fetchSaveData = data => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
     body: JSON.stringify({
-        mode: 'save',
+        mode: 'saveRow',
         data,
     }),
 });
@@ -22,5 +22,15 @@ export const fetchChangeStatus = data => fetch('/table', {
     body: JSON.stringify({
         mode: 'changeStatus',
         data,
+    }),
+});
+
+export const fetchDeleteRow = data => fetch('/table', {
+    method: 'POST',
+    cache: 'no-cache',
+    body: JSON.stringify({
+        mode: 'deleteRow',
+        id: data.id,
+        currentPage: data.currentPage,
     }),
 });

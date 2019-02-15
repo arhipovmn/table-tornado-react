@@ -12,39 +12,50 @@ export default class Paginator extends React.Component {
     render() {
         return <div className={style['paginator']}>
             <div>
-                {this.props.page - 6 >= 1
-                    ? <Link to={`/page/1`}>1</Link> : null}
-                {this.props.page - 6 >= 1
+                {this.props.currentPage - 6 >= 1
+                    ? <Link to={`/page/1`} onClick={() => this.props.getData(1)}>1</Link> : null}
+                {this.props.currentPage - 6 >= 1
                     ? <span>...</span> : null}
-                {this.props.page - 5 >= 1
-                    ? <Link to={`/page/${this.props.page - 5}`}>{`<<`}</Link> : null}
-                {this.props.page - 4 >= 1
-                    ? <Link to={`/page/${this.props.page - 4}`}>{this.props.page - 4}</Link> : null}
-                {this.props.page - 3 >= 1
-                    ? <Link to={`/page/${this.props.page - 3}`}>{this.props.page - 3}</Link> : null}
-                {this.props.page - 2 >= 1
-                    ? <Link to={`/page/${this.props.page - 2}`}>{this.props.page - 2}</Link> : null}
-                {this.props.page - 1 >= 1
-                    ? <Link to={`/page/${this.props.page - 1}`}>{this.props.page - 1}</Link> : null}
+                {this.props.currentPage - 5 >= 1
+                    ? <Link to={`/page/${this.props.currentPage - 5}`}
+                            onClick={() => this.props.getData(this.props.currentPage - 5)}>{`<<`}</Link> : null}
+                {this.props.currentPage - 4 >= 1
+                    ? <Link to={`/page/${this.props.currentPage - 4}`}
+                            onClick={() => this.props.getData(this.props.currentPage - 4)}>{this.props.currentPage - 4}</Link> : null}
+                {this.props.currentPage - 3 >= 1
+                    ? <Link to={`/page/${this.props.currentPage - 3}`}
+                            onClick={() => this.props.getData(this.props.currentPage - 3)}>{this.props.currentPage - 3}</Link> : null}
+                {this.props.currentPage - 2 >= 1
+                    ? <Link to={`/page/${this.props.currentPage - 2}`}
+                            onClick={() => this.props.getData(this.props.currentPage - 2)}>{this.props.currentPage - 2}</Link> : null}
+                {this.props.currentPage - 1 >= 1
+                    ? <Link to={`/page/${this.props.currentPage - 1}`}
+                            onClick={() => this.props.getData(this.props.currentPage - 1)}>{this.props.currentPage - 1}</Link> : null}
             </div>
             <div>
-                <b>{this.props.page}</b>
+                <b>{this.props.currentPage}</b>
             </div>
             <div>
-                {this.props.page + 1 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.page + 1}`}>{this.props.page + 1}</Link> : null}
-                {this.props.page + 2 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.page + 2}`}>{this.props.page + 2}</Link> : null}
-                {this.props.page + 3 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.page + 3}`}>{this.props.page + 3}</Link> : null}
-                {this.props.page + 4 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.page + 4}`}>{this.props.page + 4}</Link> : null}
-                {this.props.page + 5 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.page + 5}`}>{`>>`}</Link> : null}
-                {this.props.page + 6 <= this.props.pageCount
+                {this.props.currentPage + 1 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.currentPage + 1}`}
+                            onClick={() => this.props.getData(this.props.currentPage + 1)}>{this.props.currentPage + 1}</Link> : null}
+                {this.props.currentPage + 2 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.currentPage + 2}`}
+                            onClick={() => this.props.getData(this.props.currentPage + 2)}>{this.props.currentPage + 2}</Link> : null}
+                {this.props.currentPage + 3 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.currentPage + 3}`}
+                            onClick={() => this.props.getData(this.props.currentPage + 3)}>{this.props.currentPage + 3}</Link> : null}
+                {this.props.currentPage + 4 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.currentPage + 4}`}
+                            onClick={() => this.props.getData(this.props.currentPage + 4)}>{this.props.currentPage + 4}</Link> : null}
+                {this.props.currentPage + 5 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.currentPage + 5}`}
+                            onClick={() => this.props.getData(this.props.currentPage + 5)}>{`>>`}</Link> : null}
+                {this.props.currentPage + 6 <= this.props.countPage
                     ? <span>...</span> : null}
-                {this.props.page + 6 <= this.props.pageCount
-                    ? <Link to={`/page/${this.props.pageCount}`}>{this.props.pageCount}</Link> : null}
+                {this.props.currentPage + 6 <= this.props.countPage
+                    ? <Link to={`/page/${this.props.countPage}`}
+                            onClick={() => this.props.getData(this.props.countPage)}>{this.props.countPage}</Link> : null}
             </div>
         </div>;
     }
@@ -52,11 +63,11 @@ export default class Paginator extends React.Component {
 
 
 Paginator.propTypes = {
-    page: PropTypes.number.isRequired,
-    pageCount: PropTypes.number.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    countPage: PropTypes.number.isRequired,
 };
 
 Paginator.defaultProps = {
-    page: 1,
-    pageCount: 1,
+    currentPage: 1,
+    countPage: 1,
 };

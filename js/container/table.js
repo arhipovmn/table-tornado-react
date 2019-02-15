@@ -6,7 +6,7 @@ import Table from '../components/Table/Table.jsx';
 import {getData} from "../action/table";
 
 const mapDispatchToProps = dispatch => ({
-    getData: page => getData(dispatch, page),
+    getData: currentPage => getData(dispatch, currentPage),
 });
 
 const mapStateToProps = state => ({

@@ -30,9 +30,51 @@
   }
 
   > .td:nth-child(1) {
+    display: flex;
+    flex-direction: column;
     width: 75px;
     background-color: #f9f9f9;
     word-break: break-all;
+
+    > .delete {
+      position: relative;
+      height: 50px;
+
+      &:after {
+        content: '\274C';
+        position: absolute;
+        bottom: 9px;
+        left: 18px;
+        font-size: 18px;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      &:hover {
+
+        &:after {
+          opacity: 0.6;
+        }
+      }
+    }
+
+    &:hover {
+
+      > .delete {
+
+        &:after {
+          opacity: 0.3;
+        }
+
+        &:hover {
+
+          &:after {
+            opacity: 0.6;
+          }
+        }
+      }
+
+    }
   }
 
   > .td:nth-child(2) {
