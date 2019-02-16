@@ -10,7 +10,8 @@ export default class Table extends React.Component {
     constructor(props) {
         super(props);
 
-        props.getData(this.props.match.params.hasOwnProperty('key') ? +this.props.match.params.key : 1);
+        if (props.history.action === 'POP') props.getData(this.props.match.params.hasOwnProperty('key')
+            ? +this.props.match.params.key : 1);
     };
 
     render() {

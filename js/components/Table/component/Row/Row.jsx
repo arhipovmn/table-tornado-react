@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from "prop-types";
 import classNames from 'classnames';
+import moment from 'moment';
 
 import {checkClass} from '../../../../helper/helperAuth';
 import {getNameStatus} from '../../../../helper/helperStatus';
-
 
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
 import {popupAlert} from "../../../PopupAlert/PopupAlert.jsx";
@@ -142,7 +142,7 @@ export default class Row extends React.Component {
                         Кто заказал: {this.props.row.LOGIN}
                     </div>
                     <div>
-                        Дата создания: {this.props.row.DATE_CREATED}
+                        Дата создания: {moment(this.props.row.DATE_CREATED).format('DD.MM.YYYY HH:mm')}
                     </div>
                 </div>
             </div>
@@ -160,11 +160,13 @@ export default class Row extends React.Component {
                             </div> : null}
                     </div>
                     <div>
-                        {this.props.row.DATE_APPLY ? <div>{`Дата принятия: ${this.props.row.DATE_APPLY}`}</div> : null}
+                        {this.props.row.DATE_APPLY
+                            ? <div>{`Дата принятия: ${moment(this.props.row.DATE_APPLY).format('DD.MM.YYYY HH:mm')}`}</div>
+                            : null}
                         {this.props.row.DATE_PROCESSED ?
-                            <div>{`Дата обработки: ${this.props.row.DATE_PROCESSED}`}</div> : null}
+                            <div>{`Дата обработки: ${moment(this.props.row.DATE_PROCESSED).format('DD.MM.YYYY HH:mm')}}`}</div> : null}
                         {this.props.row.DATE_COMPLETED ?
-                            <div>{`Дата выполнения: ${this.props.row.DATE_COMPLETED}`}</div> : null}
+                            <div>{`Дата выполнения: ${moment(this.props.row.DATE_COMPLETED).format('DD.MM.YYYY HH:mm')}}`}</div> : null}
                     </div>
                 </div>
             </div>
@@ -176,7 +178,7 @@ Row.propTypes = {
     keyStore: PropTypes.number.isRequired,
     row: PropTypes.shape({
         ID: PropTypes.number.isRequired,
-        NUMBER: PropTypes.number.isRequired,
+        NUMBER: PropTypes.string.isRequired,
         DESCRIPTION: PropTypes.string.isRequired,
         LINK: PropTypes.string.isRequired,
         DATE_CREATED: PropTypes.string.isRequired,

@@ -19,7 +19,6 @@ export default class PreLoader extends React.Component {
 
 PreLoader.propTypes = {
     fetching: PropTypes.bool.isRequired,
-    className: PropTypes.string,
 };
 
 PreLoader.defaultProps = {
