@@ -7,6 +7,16 @@ export const fetchGetData = (currentPage = 1) => fetch('/table', {
     }),
 });
 
+export const fetchSearch = (currentPage = 1, textSearch) => fetch('/table', {
+    method: 'POST',
+    cache: 'no-cache',
+    body: JSON.stringify({
+        mode: 'search',
+        textSearch,
+        currentPage: currentPage,
+    }),
+});
+
 export const fetchSaveData = data => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
@@ -32,5 +42,14 @@ export const fetchDeleteRow = data => fetch('/table', {
         mode: 'deleteRow',
         id: data.id,
         currentPage: data.currentPage,
+    }),
+});
+
+export const fetchAutocomplete = text => fetch('/table', {
+    method: 'POST',
+    cache: 'no-cache',
+    body: JSON.stringify({
+        mode: 'search',
+        textSearch: text,
     }),
 });

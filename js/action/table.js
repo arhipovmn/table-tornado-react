@@ -1,5 +1,5 @@
-import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow} from '../helper/tableAjax';
-import {popupAlert} from "../components/PopupAlert/PopupAlert.jsx";
+import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow, fetchSearch} from '../helper/tableAjax';
+import {popupAlert} from '../components/PopupAlert/PopupAlert.jsx';
 
 export const getData = (dispatch, currentPage = 1) => {
     dispatch({
@@ -13,6 +13,28 @@ export const getData = (dispatch, currentPage = 1) => {
             dispatch({
                 type: 'GET_DATA',
                 newState: json,
+                currentPage: currentPage,
+            });
+        }).catch(error => {
+        popupAlert({
+            text: error,
+        });
+        console.error(error);
+    });
+};
+
+export const search = (dispatch, currentPage = 1, textSearch) => {
+    dispatch({
+        type: 'FETCHING',
+        fetching: true,
+    });
+    fetchSearch(currentPage, textSearch)
+        .then(response => response.json())
+        .then(json => {
+            if (!Object.keys(json).length) throw 'empty';
+            dispatch({
+                type: 'GET_DATA',
+                newState: json.list,
                 currentPage: currentPage,
             });
         }).catch(error => {

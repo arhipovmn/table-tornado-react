@@ -7,8 +7,9 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "moment": "^2.24.0",
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.7.2",
     "react": "latest",
+    "react-autocomplete": "^1.8.1",
     "react-dom": "latest",
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
@@ -27,7 +28,7 @@
     "css-loader": "latest",
     "less": "latest",
     "less-loader": "latest",
-    "webpack": "^4.29.0",
+    "webpack": "^4.29.4",
     "webpack-cli": "latest"
   },
   "repository": {

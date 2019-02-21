@@ -17,11 +17,11 @@ import tornado.ioloop
 import pymysql
 
 connectionMysql = pymysql.connect(host='localhost',
-                             user='root',
-                             password='',
-                             db='master',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+                                  user='root',
+                                  password='',
+                                  db='master',
+                                  charset='utf8mb4',
+                                  cursorclass=pymysql.cursors.DictCursor)
 
 dirname = os.path.dirname(__file__)
 
@@ -49,7 +49,8 @@ class BaseHandler(tornado.web.RequestHandler):
             user_id = tornado.escape.xhtml_escape(str(self.current_user))
 
         auth = 'true' if bool(user_id) == True else ''
-        self.render('index.html', title='Таблица', auth=auth, user_name=self.user['LOGIN'], user_class=self.user['CLASS'])
+        self.render('index.html', title='Таблица', auth=auth, user_name=self.user['LOGIN'],
+                    user_class=self.user['CLASS'])
 
     def check_auth(self, data):
         user_row = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
@@ -69,7 +70,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return tornado.escape.json_encode(object)
 
     def get_date_order(self, id, date_field):
-        count = self.cursor.execute('SELECT '+date_field+' FROM master_orders WHERE ID = %s;', [id])
+        count = self.cursor.execute('SELECT ' + date_field + ' FROM master_orders WHERE ID = %s;', [id])
         if count:
             row = self.cursor.fetchone()
             return row[date_field]
@@ -121,13 +122,14 @@ class TableHandler(BaseHandler):
             if self.user['CLASS'] == 5:
 
                 if data['data'].get('id'):
-                    self.cursor.execute('UPDATE master_orders SET '+data['data']['type']+' = %s WHERE ID = %s',
+                    self.cursor.execute('UPDATE master_orders SET ' + data['data']['type'] + ' = %s WHERE ID = %s',
                                         [data['data']['value'], data['data']['id']])
                 else:
-                    self.cursor.execute('INSERT INTO master_orders (NUMBER, DESCRIPTION, LINK, USER_CREATED, DATE_CREATED) '
-                                        'VALUE (%s, %s, %s, %s, CURRENT_TIMESTAMP)',
-                                        [data['data']['number'], data['data']['description'], data['data']['link'],
-                                         self.user['ID']])
+                    self.cursor.execute(
+                        'INSERT INTO master_orders (NUMBER, DESCRIPTION, LINK, USER_CREATED, DATE_CREATED) '
+                        'VALUE (%s, %s, %s, %s, CURRENT_TIMESTAMP)',
+                        [data['data']['number'], data['data']['description'], data['data']['link'],
+                         self.user['ID']])
                 connectionMysql.commit()
 
                 self.write('ok')
@@ -171,10 +173,16 @@ class TableHandler(BaseHandler):
                 if self.user['CLASS'] == 5:
                     where_delete = ' AND USER_CREATED = %s' % self.user['ID']
 
-                self.cursor.execute('DELETE FROM master_orders WHERE ID = %s'+where_delete, [data['id']])
+                self.cursor.execute('DELETE FROM master_orders WHERE ID = %s' + where_delete, [data['id']])
                 connectionMysql.commit()
 
             row = self.get_row(data)
+            self.write(self.set_json(row))
+
+        elif data['mode'] == 'search':
+            if self.user['CLASS'] != 0:
+                row = self.get_row(data)
+
             self.write(self.set_json(row))
 
     def get_row(self, data):
@@ -182,11 +190,37 @@ class TableHandler(BaseHandler):
         row = {'list': {}, 'currentPage': 1}
         count_page = 0
         where_for_user = ''
+        sql_params = {'format_data': '%Y-%m-%dT%H:%i:%s'}
+        limit = ' LIMIT %(from)s, %(to)s'
 
         if self.user['CLASS'] == 5:
-            where_for_user = 'WHERE mo.USER_CREATED = %s AND ACTIVE = \'Y\' ' % self.user['ID']
+            where_for_user = 'WHERE mo.USER_CREATED = %(user_id)s AND ACTIVE = \'Y\' '
+            sql_params.update({'user_id': self.user['ID']})
 
-        count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo %s' % where_for_user)
+        where_or_or = 'WHERE (' if where_for_user == '' else 'AND ('
+
+        where_for_search = ''
+
+        if data.get('textSearch') is not None:
+            if data.get('searchColumn') is not None:
+                if data.get('searchColumn') == 'NUMBER':
+                    where_for_search = 'mo.NUMBER LIKE %(search_text)s'
+                elif data.get('searchColumn') == 'DESCRIPTION':
+                    where_for_search = 'mo.DESCRIPTION LIKE %(search_text)s'
+                elif data.get('searchColumn') == 'LINK':
+                    where_for_search = 'mo.LINK LIKE %(search_text)s'
+            else:
+                where_for_search = 'mo.NUMBER LIKE %(search_text)s ' \
+                                   'OR mo.DESCRIPTION LIKE %(search_text)s ' \
+                                   'OR mo.LINK LIKE %(search_text)s) '
+
+            if where_for_search != '':
+                where_for_search = where_or_or + where_for_search
+                sql_params.update({'search_text': '%' + data['textSearch'] + '%'})
+                sql_params.update({'from': 0, 'to': 20})
+
+        count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo '
+                                    + where_for_user + where_for_search, sql_params)
 
         if count:
             row_count = self.cursor.fetchone()
@@ -194,33 +228,36 @@ class TableHandler(BaseHandler):
             if row_count['COUNT'] and row_count['COUNT'] > factor:
                 count_page = row_count['COUNT'] / factor
                 remainder = count_page % 1
-                count_page = int(count_page)+1 if remainder > 0 else int(count_page)
+                count_page = int(count_page) + 1 if remainder > 0 else int(count_page)
             elif row_count['COUNT']:
                 count_page = 1
             else:
                 count_page = 0
 
         if count_page:
-            data['currentPage'] = count_page if data['currentPage'] > count_page else data['currentPage']
-            end_limit = factor if data['currentPage'] <= 1 else data['currentPage'] * factor
+            if data.get('currentPage') is None:
+                end_limit = factor
+                data['currentPage'] = 1
+            else:
+                data['currentPage'] = count_page if data.get('currentPage') > count_page else data.get('currentPage')
+                end_limit = factor if data.get('currentPage') <= 1 else data.get('currentPage') * factor
+                sql_params.update({'from': (end_limit - factor), 'to': factor})
+
             count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.DESCRIPTION, mo.LINK, mo.USER_CREATED, '
-                                        'DATE_FORMAT(mo.DATE_CREATED, %s) AS DATE_CREATED, '
-                                        'DATE_FORMAT(mo.DATE_APPLY, %s) AS DATE_APPLY, '
-                                        'DATE_FORMAT(mo.DATE_PROCESSED, %s) AS DATE_PROCESSED, '
-                                        'DATE_FORMAT(mo.DATE_COMPLETED, %s) AS DATE_COMPLETED, '
+                                        'DATE_FORMAT(mo.DATE_CREATED, %(format_data)s) AS DATE_CREATED, '
+                                        'DATE_FORMAT(mo.DATE_APPLY, %(format_data)s) AS DATE_APPLY, '
+                                        'DATE_FORMAT(mo.DATE_PROCESSED, %(format_data)s) AS DATE_PROCESSED, '
+                                        'DATE_FORMAT(mo.DATE_COMPLETED, %(format_data)s) AS DATE_COMPLETED, '
                                         'mo.TRACKNUMBER, mo.STATUS, u.LOGIN '
                                         'FROM master_orders AS mo '
                                         'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
-                                        + where_for_user +
-                                        'ORDER BY mo.DATE_CREATED DESC '
-                                        'LIMIT %s, %s;',
-                                        ['%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
-                                         '%Y-%m-%dT%H:%i:%s', '%Y-%m-%dT%H:%i:%s',
-                                         (end_limit - factor), factor])
+                                        + where_for_user + where_for_search +
+                                        'ORDER BY mo.DATE_CREATED DESC'
+                                        + limit + '', sql_params)
             if count:
                 row['list'] = self.cursor.fetchall()
                 row['list'].append({'countPage': count_page})
-                row['currentPage'] = data['currentPage']
+                row['currentPage'] = data.get('currentPage')
 
         return row
 

@@ -7,7 +7,7 @@ import PreLoader from '../PreLoader/PreLoader.jsx';
 import {popupAlert} from '../PopupAlert/PopupAlert.jsx';
 
 import style from './PopupAdd.less';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 class Add extends React.Component {
     constructor(props) {

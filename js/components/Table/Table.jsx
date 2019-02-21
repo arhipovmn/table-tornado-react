@@ -3,6 +3,7 @@ import React from 'react';
 import PreLoader from '../PreLoader/PreLoader.jsx';
 import Paginator from '../Paginator/Paginator.jsx';
 import Row from './container/row';
+import {popupAdd} from '../PopupAdd/PopupAdd.jsx';
 
 import style from './Table.less';
 
@@ -10,19 +11,30 @@ export default class Table extends React.Component {
     constructor(props) {
         super(props);
 
-        if (props.history.action === 'POP') props.getData(this.props.match.params.hasOwnProperty('key')
-            ? +this.props.match.params.key : 1);
+        props.textSearch ? props.search(props.table.currentPage, props.textSearch)
+            : props.getData(this.props.match.params.hasOwnProperty('key') ? +this.props.match.params.key : 1);
     };
+
+    handlerPaginator(currentPage) {
+        this.props.textSearch
+            ? this.props.search(currentPage, this.props.textSearch)
+            : this.props.getData(currentPage);
+    }
 
     render() {
         const countPage = this.props.table.list.length ? this.props.table.list[(this.props.table.list.length - 1)].countPage : 1;
 
-        return <PreLoader fetching={this.props.table.fetching}>
-            <div className={style['center']}>
-                <Paginator currentPage={this.props.table.currentPage} countPage={countPage}
-                           getData={this.props.getData}/>
+        return <div className={style['center']}>
+            <div className={style['head-table']}>
+                <div/>
+                <div>{window.auth && window.user_class === 5
+                    ? <button onClick={e => popupAdd(e)}>Добавить заказ</button>
+                    : null}</div>
             </div>
-            <div className={style['center']}>
+            <PreLoader fetching={this.props.table.fetching} className={style['center']}>
+                <Paginator currentPage={this.props.table.currentPage} countPage={countPage}
+                           getData={::this.handlerPaginator}
+                           page={this.props.textSearch ? 'search' : 'page'}/>
                 <div className={style['table']}>
                     <div className={style['th']}>
                         <div className={style['td']}>
@@ -37,16 +49,16 @@ export default class Table extends React.Component {
                     </div>
                     {this.props.table.list.map((row, key) => {
                         if (row.hasOwnProperty('countPage')) return null;
+                        //debugger;
                         return <Row key={key} row={row}
                                     keyStore={key}
                                     currentPage={this.props.table.currentPage}/>
                     })}
                 </div>
-            </div>
-            <div className={style['center']}>
                 <Paginator currentPage={this.props.table.currentPage} countPage={countPage}
-                           getData={this.props.getData}/>
-            </div>
-        </PreLoader>;
+                           getData={::this.handlerPaginator}
+                           page={this.props.textSearch ? 'search' : 'page'}/>
+            </PreLoader>
+        </div>;
     };
 }

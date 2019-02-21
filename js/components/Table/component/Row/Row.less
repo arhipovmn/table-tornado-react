@@ -36,44 +36,16 @@
     background-color: #f9f9f9;
     word-break: break-all;
 
-    > .delete {
-      position: relative;
-      height: 50px;
-
-      &:after {
-        content: '\274C';
-        position: absolute;
-        bottom: 9px;
-        left: 18px;
-        font-size: 18px;
-        opacity: 0;
-        cursor: pointer;
-      }
-
-      &:hover {
-
-        &:after {
-          opacity: 0.6;
-        }
-      }
+    > button {
+      display: none;
+      margin-bottom: 10px;
     }
 
-    &:hover {
+    &:hover{
 
-      > .delete {
-
-        &:after {
-          opacity: 0.3;
-        }
-
-        &:hover {
-
-          &:after {
-            opacity: 0.6;
-          }
-        }
+      > button {
+        display: block;
       }
-
     }
   }
 

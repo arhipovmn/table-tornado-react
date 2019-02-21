@@ -1,0 +1,11 @@
+.input {
+    width: 80%;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.item {
+    cursor: pointer;
+}

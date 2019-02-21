@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-import PreLoader from "../PreLoader/PreLoader.jsx";
+import PreLoader from '../PreLoader/PreLoader.jsx';
 
 import style from './PopupAlert.less';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Redirect} from 'react-router';
+import {BrowserRouter, Route, NavLink} from 'react-router-dom';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux'
-import {BrowserRouter, Route, NavLink} from "react-router-dom";
 import classNames from 'classnames';
 
 import reducer from '../../reducer/index';
@@ -11,7 +11,7 @@ import defaultStore from '../../reducer/initStore';
 
 import Table from '../../container/table';
 import Auth from '../Auth/Auth.jsx';
-import {popupAdd} from '../PopupAdd/PopupAdd.jsx';
+import Search from '../Search/Search.jsx';
 
 import style from './Index.less';
 
@@ -21,11 +21,20 @@ class Index extends React.Component {
 
         this.state = {
             auth: window.auth,
+            textSearch: '',
         };
     }
 
     handlerAuth(auth) {
         this.setState({auth});
+    }
+
+    handlerSearch(textSearch) {
+        this.setState({textSearch});
+    }
+
+    searchTable(props) {
+        return <Table textSearch={this.state.textSearch} {...props}/>;
     }
 
     render() {
@@ -41,8 +50,8 @@ class Index extends React.Component {
                             : null}
                     </div>
                     <div>
-                        {this.state.auth && window.user_class === 5
-                            ? <button onClick={e => popupAdd(e)}>Добавить заказ</button>
+                        {window.auth
+                            ? <Route path={'/'} render={props => <Search handlerSearch={::this.handlerSearch} {...props}/>}/>
                             : null}
                     </div>
                     {this.state.auth
@@ -55,6 +64,7 @@ class Index extends React.Component {
                 <div className={style['content']}>
                     <Route exact path={'/'} render={props => <Table {...props}/>}/>
                     <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
+                    <Route exact sensitive strict path={'/search/:key'} component={::this.searchTable}/>
                     <Route path={'/auth'} render={() => this.state.auth
                         ? <Redirect to={'/'}/>
                         : <Auth handlerAuth={::this.handlerAuth}/>}/>

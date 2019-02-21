@@ -3,10 +3,11 @@ import {connect} from 'react-redux';
 
 import Table from '../components/Table/Table.jsx';
 
-import {getData} from "../action/table";
+import {getData, search} from '../action/table';
 
 const mapDispatchToProps = dispatch => ({
     getData: currentPage => getData(dispatch, currentPage),
+    search: (currentPage, textSearch) => search(dispatch, currentPage, textSearch),
 });
 
 const mapStateToProps = state => ({

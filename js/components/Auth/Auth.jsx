@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import {fetchAuth} from '../../helper/authAjax';
 
-import PreLoader from "../PreLoader/PreLoader.jsx";
-import {popupAlert} from "../../components/PopupAlert/PopupAlert.jsx";
+import PreLoader from '../PreLoader/PreLoader.jsx';
+import {popupAlert} from '../../components/PopupAlert/PopupAlert.jsx';
 
 import style from './Auth.less';
 

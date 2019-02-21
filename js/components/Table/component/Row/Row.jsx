@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
 
@@ -7,7 +7,7 @@ import {checkClass} from '../../../../helper/helperAuth';
 import {getNameStatus} from '../../../../helper/helperStatus';
 
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
-import {popupAlert} from "../../../PopupAlert/PopupAlert.jsx";
+import {popupAlert} from '../../../PopupAlert/PopupAlert.jsx';
 
 import style from './Row.less';
 
@@ -107,7 +107,7 @@ export default class Row extends React.Component {
         return <PreLoader className={style['tr']} fetching={this.state.fetching}>
             <div className={style['td']}>
                 <div>{this.props.row.NUMBER}</div>
-                {window.auth ? <div className={style['delete']} onClick={::this.deleteRow}/> : null}
+                {window.auth ? <button onClick={::this.deleteRow}>удал.</button> : null}
             </div>
             <div className={style['td']}>
                 <div>
