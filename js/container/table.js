@@ -7,7 +7,7 @@ import {getData, search} from '../action/table';
 
 const mapDispatchToProps = dispatch => ({
     getData: currentPage => getData(dispatch, currentPage),
-    search: (currentPage, textSearch) => search(dispatch, currentPage, textSearch),
+    search: (currentPage, selectAutocomplete) => search(dispatch, currentPage, selectAutocomplete),
 });
 
 const mapStateToProps = state => ({

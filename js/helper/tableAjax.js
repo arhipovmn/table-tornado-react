@@ -7,12 +7,12 @@ export const fetchGetData = (currentPage = 1) => fetch('/table', {
     }),
 });
 
-export const fetchSearch = (currentPage = 1, textSearch) => fetch('/table', {
+export const fetchSearch = (currentPage = 1, selectAutocomplete) => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
     body: JSON.stringify({
         mode: 'search',
-        textSearch,
+        textSearch: selectAutocomplete,
         currentPage: currentPage,
     }),
 });

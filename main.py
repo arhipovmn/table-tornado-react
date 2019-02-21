@@ -1,4 +1,5 @@
-# import tornado.ioloop as IOLoop
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 
@@ -16,11 +17,13 @@ import tornado.ioloop
 
 import pymysql
 
-connectionMysql = pymysql.connect(host='localhost',
-                                  user='root',
-                                  password='',
-                                  db='master',
-                                  charset='utf8mb4',
+from setting import setting
+
+connectionMysql = pymysql.connect(host=setting['mysql-host'],
+                                  user=setting['mysql-user'],
+                                  password=setting['mysql-password'],
+                                  db=setting['mysql-db'],
+                                  charset=setting['mysql-charset'],
                                   cursorclass=pymysql.cursors.DictCursor)
 
 dirname = os.path.dirname(__file__)
@@ -273,6 +276,7 @@ def make_app():
         (r"/", MainHandler),
         (r"/table", TableHandler),
         (r"/page/[1-9]{1,11}", MainHandler),
+        (r"/search/[1-9]{1,11}", MainHandler),
         (r"/auth", AuthHandler),
         (r"/quit", QuitHandler)
     ], **settings)
@@ -286,5 +290,5 @@ def make_app():
 if __name__ == "__main__":
     app = make_app()
     server = HTTPServer(app)
-    server.listen(8888)
+    server.listen(setting['network-port'])
     tornado.ioloop.IOLoop.current().start()

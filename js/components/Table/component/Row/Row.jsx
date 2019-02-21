@@ -107,7 +107,8 @@ export default class Row extends React.Component {
         return <PreLoader className={style['tr']} fetching={this.state.fetching}>
             <div className={style['td']}>
                 <div>{this.props.row.NUMBER}</div>
-                {window.auth ? <button onClick={::this.deleteRow}>удал.</button> : null}
+                {window.auth ? <button title={'Удалить'}
+                                       onClick={::this.deleteRow}>X</button> : null}
             </div>
             <div className={style['td']}>
                 <div>
@@ -164,9 +165,9 @@ export default class Row extends React.Component {
                             ? <div>{`Дата принятия: ${moment(this.props.row.DATE_APPLY).format('DD.MM.YYYY HH:mm')}`}</div>
                             : null}
                         {this.props.row.DATE_PROCESSED ?
-                            <div>{`Дата обработки: ${moment(this.props.row.DATE_PROCESSED).format('DD.MM.YYYY HH:mm')}}`}</div> : null}
+                            <div>{`Дата обработки: ${moment(this.props.row.DATE_PROCESSED).format('DD.MM.YYYY HH:mm')}`}</div> : null}
                         {this.props.row.DATE_COMPLETED ?
-                            <div>{`Дата выполнения: ${moment(this.props.row.DATE_COMPLETED).format('DD.MM.YYYY HH:mm')}}`}</div> : null}
+                            <div>{`Дата выполнения: ${moment(this.props.row.DATE_COMPLETED).format('DD.MM.YYYY HH:mm')}`}</div> : null}
                     </div>
                 </div>
             </div>

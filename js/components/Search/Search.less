@@ -1,0 +1,44 @@
+.input {
+  width: 80%;
+}
+
+.active {
+  background-color: #b1dfbb;
+  padding: 4px 5px 4px 5px!important;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 2px 5px 2px 5px;
+
+  > div:first-child {
+
+    > span:first-child {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    > span:last-child {
+      font-size: 12px;
+    }
+  }
+
+  > div:last-child {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 12px;
+    font-style: italic;
+    padding-left: 15px;
+  }
+}
+
+/*
+.item {
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 2px 5px 2px 5px;
+}*/

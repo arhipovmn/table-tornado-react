@@ -1,0 +1,8 @@
+setting = {
+    'mysql-host': 'localhost',
+    'mysql-user': 'root',
+    'mysql-password': '',
+    'mysql-db': 'master',
+    'mysql-charset': 'utf8mb4',
+    'network-port': 8888,
+}

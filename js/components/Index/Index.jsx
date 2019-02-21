@@ -21,7 +21,10 @@ class Index extends React.Component {
 
         this.state = {
             auth: window.auth,
-            textSearch: '',
+            dataSearch: {
+                textSearch: '',
+                selectAutocomplete: '',
+            },
         };
     }
 
@@ -29,12 +32,12 @@ class Index extends React.Component {
         this.setState({auth});
     }
 
-    handlerSearch(textSearch) {
-        this.setState({textSearch});
+    handlerSearch(dataSearch) {
+        this.setState({dataSearch});
     }
 
     searchTable(props) {
-        return <Table textSearch={this.state.textSearch} {...props}/>;
+        return <Table dataSearch={this.state.dataSearch} {...props}/>;
     }
 
     render() {
@@ -62,7 +65,7 @@ class Index extends React.Component {
                         : <div/>}
                 </div>
                 <div className={style['content']}>
-                    <Route exact path={'/'} render={props => <Table {...props}/>}/>
+                    <Route exact path={'/'} component={Table}/>
                     <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
                     <Route exact sensitive strict path={'/search/:key'} component={::this.searchTable}/>
                     <Route path={'/auth'} render={() => this.state.auth

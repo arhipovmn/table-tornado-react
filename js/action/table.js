@@ -9,26 +9,22 @@ export const getData = (dispatch, currentPage = 1) => {
     fetchGetData(currentPage)
         .then(response => response.json())
         .then(json => {
-            if (!Object.keys(json).length) throw 'empty';
             dispatch({
                 type: 'GET_DATA',
                 newState: json,
                 currentPage: currentPage,
             });
         }).catch(error => {
-        popupAlert({
-            text: error,
-        });
         console.error(error);
     });
 };
 
-export const search = (dispatch, currentPage = 1, textSearch) => {
+export const search = (dispatch, currentPage = 1, selectAutocomplete) => {
     dispatch({
         type: 'FETCHING',
         fetching: true,
     });
-    fetchSearch(currentPage, textSearch)
+    fetchSearch(currentPage, selectAutocomplete)
         .then(response => response.json())
         .then(json => {
             if (!Object.keys(json).length) throw 'empty';
