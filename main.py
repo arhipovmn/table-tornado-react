@@ -11,6 +11,8 @@ import tornado.escape
 
 from tornado.httpserver import HTTPServer
 
+from datetime import datetime
+
 import tornado.ioloop
 
 import tornado.ioloop
@@ -128,11 +130,12 @@ class TableHandler(BaseHandler):
                     self.cursor.execute('UPDATE master_orders SET ' + data['data']['type'] + ' = %s WHERE ID = %s',
                                         [data['data']['value'], data['data']['id']])
                 else:
+                    date_utc = datetime.utcnow()
                     self.cursor.execute(
                         'INSERT INTO master_orders (NUMBER, DESCRIPTION, LINK, USER_CREATED, DATE_CREATED) '
-                        'VALUE (%s, %s, %s, %s, CURRENT_TIMESTAMP)',
+                        'VALUE (%s, %s, %s, %s, %s)',
                         [data['data']['number'], data['data']['description'], data['data']['link'],
-                         self.user['ID']])
+                         self.user['ID'], date_utc.strftime('%Y-%m-%d %H:%M:%S')])
                 connectionMysql.commit()
 
                 self.write('ok')
@@ -142,28 +145,34 @@ class TableHandler(BaseHandler):
         elif data['mode'] == 'changeStatus':
 
             if self.user['CLASS'] == 10:
+                date_utc = datetime.utcnow()
 
                 if data['data']['status'] == 'apply':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_APPLY = CURRENT_TIMESTAMP '
-                                        'WHERE ID = %s', [data['data']['status'], data['data']['id']])
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_APPLY = %s '
+                                        'WHERE ID = %s',
+                                        [data['data']['status'],
+                                         date_utc.strftime('%Y-%m-%d %H:%M:%S'), data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_APPLY')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat()}))
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat()+'+00:00'}))
                     return
                 elif data['data']['status'] == 'processed' and data['data']['trackNumber'] != '':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = CURRENT_TIMESTAMP, '
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = %s, '
                                         'TRACKNUMBER = %s WHERE ID = %s',
-                                        [data['data']['status'], data['data']['trackNumber'], data['data']['id']])
+                                        [data['data']['status'], date_utc.strftime('%Y-%m-%d %H:%M:%S'),
+                                         data['data']['trackNumber'], data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_PROCESSED')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat()}))
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat()+'+00:00'}))
                     return
                 elif data['data']['status'] == 'completed':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = CURRENT_TIMESTAMP '
-                                        'WHERE ID = %s', [data['data']['status'], data['data']['id']])
+                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = %s '
+                                        'WHERE ID = %s',
+                                        [data['data']['status'], date_utc.strftime('%Y-%m-%d %H:%M:%S'),
+                                         data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_COMPLETED')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_COMPLETED', 'date': date.isoformat()}))
+                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_COMPLETED', 'date': date.isoformat()+'+00:00'}))
                     return
 
                 self.write(self.set_json({'status': 'error'}))
@@ -189,11 +198,11 @@ class TableHandler(BaseHandler):
             self.write(self.set_json(row))
 
     def get_row(self, data):
-        factor = 2
+        factor = 30
         row = {'list': {}, 'currentPage': 1}
         count_page = 0
         where_for_user = ''
-        sql_params = {'format_data': '%Y-%m-%dT%H:%i:%s'}
+        sql_params = {'format_data': '%Y-%m-%dT%H:%i:%s+00:00'}
         limit = ' LIMIT %(from)s, %(to)s'
 
         if self.user['CLASS'] == 5:
@@ -270,6 +279,7 @@ settings = {
     "static_path": os.path.join(dirname, 'static'),
     "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
 }
+
 
 def make_app():
     return tornado.web.Application([
