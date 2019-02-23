@@ -8,6 +8,7 @@ This SPA application. This is just a table in which there is a “customer” (C
 ...
 # git status
 # git reset --hard
+# git pull
 ...
 # python -m venv venv  
 # venv\Scripts\activate  
