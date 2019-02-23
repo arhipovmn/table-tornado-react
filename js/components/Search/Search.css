@@ -3,26 +3,27 @@
 }
 .active {
   background-color: #b1dfbb;
-  padding: 4px 5px 4px 5px!important;
 }
 .item {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  padding: 2px 5px 2px 5px;
+  padding: 5px 5px 5px 5px;
+}
+.item > div:first-child {
+  font-size: 11px;
 }
 .item > div:first-child > span:first-child {
-  font-weight: bold;
-  font-size: 14px;
+  font-size: 11px;
 }
 .item > div:first-child > span:last-child {
-  font-size: 12px;
+  font-size: 11px;
 }
 .item > div:last-child {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 14px;
   font-style: italic;
   padding-left: 15px;
 }

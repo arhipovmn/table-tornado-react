@@ -29,20 +29,29 @@ export default class Table extends React.Component {
                 const searchColumn = column => {
                     switch (column) {
                         case 'DESCRIPTION':
-                            return 'в описание';
+                            return 'найдено в описание';
                         case 'LINK':
-                            return 'в ссылке';
+                            return 'найдено в ссылке';
                         case 'NUMBER':
-                            return 'в номере заказа';
+                            return 'найдено в номере заказа';
                         default:
                             return '';
                     }
                 };
+                const renderLabel = label => {
+                    const index = label.toLowerCase().indexOf(this.state.textSearch.toLowerCase());
+                    const newLabel = label.slice(index, (index+this.state.textSearch.length));
+                    return <span>
+                        {label.slice(index-16, index)}
+                        <b>{newLabel}</b>
+                        {label.slice(index+this.state.textSearch.length, index+this.state.textSearch.length+16)}
+                    </span>;
+                };
                 return this.state.fetching
                     ? <div>Загрузка</div>
                     : <div className={classNames(isHighlighted ? style['active'] : null, style['item'])}>
-                        <div><span>№ {item.number}, </span><span>{searchColumn(item.column)}</span></div>
-                        <div>{item.label}</div>
+                        <div>Номер заказа <span>{item.number}</span>{<span>, {searchColumn(item.column)}</span>}</div>
+                        <div>{renderLabel(item.label)}</div>
                     </div>;
             }}
             wrapperStyle={{

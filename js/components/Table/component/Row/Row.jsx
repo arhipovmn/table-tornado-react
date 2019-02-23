@@ -155,7 +155,7 @@ export default class Row extends React.Component {
                     </div>
                     <div>
                         {this.props.row.TRACKNUMBER
-                            ? <div>Трек-номер:
+                            ? <div>{`Трек-номер: `}
                                 <a href={`https://gdeposylka.ru/courier/china-ems/tracking/${this.props.row.TRACKNUMBER}`}
                                    target={'_blank'}>{this.props.row.TRACKNUMBER}</a>
                             </div> : null}
