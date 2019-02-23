@@ -18,8 +18,8 @@ export default function reducer(state = [], action) {
 
         case 'CHANGE_STATUS':
             state.list[action.data.keyStore]['STATUS'] = action.data.status;
-            if (action.data.trackNumber) {
-                state.list[action.data.keyStore]['TRACKNUMBER'] = action.data.trackNumber;
+            if (action.data.deliveryMethod) {
+                state.list[action.data.keyStore]['DELIVERY_METHOD'] = action.data.deliveryMethod;
             }
             state.list[action.data.keyStore][action.data.date_type] = action.data.date;
             return Object.assign({}, state);

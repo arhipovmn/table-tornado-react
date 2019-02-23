@@ -28,7 +28,7 @@ CREATE TABLE `master_orders` (
   `DATE_APPLY` datetime DEFAULT NULL,
   `DATE_PROCESSED` datetime DEFAULT NULL,
   `DATE_COMPLETED` datetime DEFAULT NULL,
-  `TRACKNUMBER` text,
+  `DELIVERY_METHOD` text,
   `STATUS` enum('new','apply','processed','completed') NOT NULL DEFAULT 'new',
   `ACTIVE` enum('Y','N') NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`ID`),
