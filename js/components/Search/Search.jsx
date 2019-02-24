@@ -3,6 +3,7 @@ import Autocomplete from 'react-autocomplete';
 import classNames from 'classnames';
 
 import {fetchAutocomplete} from '../../helper/tableAjax';
+import {search} from '../../action/table'
 
 import style from './Search.less';
 
@@ -110,6 +111,7 @@ export default class Table extends React.Component {
                     textSearch: this.state.textSearch,
                     selectAutocomplete,
                 });
+                search(window.store.dispatch, 1, selectAutocomplete);
             }}/>;
     };
 }

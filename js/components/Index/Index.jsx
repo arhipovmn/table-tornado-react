@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Redirect} from 'react-router';
+import {Switch, Redirect} from 'react-router';
 import {BrowserRouter, Route, NavLink} from 'react-router-dom';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux'
@@ -12,6 +12,7 @@ import defaultStore from '../../reducer/initStore';
 import Table from '../../container/table';
 import Auth from '../Auth/Auth.jsx';
 import Search from '../Search/Search.jsx';
+import {getData} from '../../action/table'
 
 import style from './Index.less';
 
@@ -36,10 +37,6 @@ class Index extends React.Component {
         this.setState({dataSearch});
     }
 
-    searchTable(props) {
-        return <Table dataSearch={this.state.dataSearch} {...props}/>;
-    }
-
     render() {
         return <BrowserRouter>
             <div className={style['root']}>
@@ -47,14 +44,16 @@ class Index extends React.Component {
                     <div>
                         [<NavLink exact to={'/'}
                                   isActive={(match, location) => (match ? true : location.pathname.includes('/page/'))}
-                                  activeClassName={style['selected']}>Таблица</NavLink>]
+                                  activeClassName={style['selected']}
+                                  onClick={() => getData(window.store.dispatch, 1)}>Таблица</NavLink>]
                         {!this.state.auth
                             ? <span> [<NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>]</span>
                             : null}
                     </div>
                     <div>
                         {window.auth
-                            ? <Route path={'/'} render={props => <Search handlerSearch={::this.handlerSearch} {...props}/>}/>
+                            ? <Route path={'/'}
+                                     render={props => <Search handlerSearch={::this.handlerSearch} {...props}/>}/>
                             : null}
                     </div>
                     {this.state.auth
@@ -65,12 +64,15 @@ class Index extends React.Component {
                         : <div/>}
                 </div>
                 <div className={style['content']}>
-                    <Route exact path={'/'} component={Table}/>
-                    <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
-                    <Route exact sensitive strict path={'/search/:key'} component={::this.searchTable}/>
-                    <Route path={'/auth'} render={() => this.state.auth
-                        ? <Redirect to={'/'}/>
-                        : <Auth handlerAuth={::this.handlerAuth}/>}/>
+                    <Switch>
+                        <Route exact path={'/'} render={props => <Table {...props}/>}/>
+                        <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
+                        <Route exact sensitive strict path={'/search/:key'} render={props => <Table
+                            dataSearch={this.state.dataSearch} {...props}/>}/>
+                        <Route path={'/auth'} render={() => this.state.auth
+                            ? <Redirect to={'/'}/>
+                            : <Auth handlerAuth={::this.handlerAuth}/>}/>
+                    </Switch>
                 </div>
             </div>
         </BrowserRouter>;

@@ -11,10 +11,7 @@ export default class Table extends React.Component {
     constructor(props) {
         super(props);
 
-        props.dataSearch
-            ? props.search(1, props.dataSearch.selectAutocomplete)
-            : props.getData(this.props.match.params.hasOwnProperty('key')
-                ? +this.props.match.params.key : 1);
+        props.getData(1);
     };
 
     handlerPaginator(currentPage) {
