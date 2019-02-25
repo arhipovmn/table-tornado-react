@@ -41,15 +41,15 @@ export default class Table extends React.Component {
                 };
                 const renderLabel = label => {
                     const index = label.toLowerCase().indexOf(this.state.textSearch.toLowerCase());
-                    const newLabel = label.slice(index, (index+this.state.textSearch.length));
+                    const newLabel = label.slice(index, (index + this.state.textSearch.length));
                     return <span>
-                        {label.slice(index-16, index)}
+                        {label.slice(index - 16, index)}
                         <b>{newLabel}</b>
-                        {label.slice(index+this.state.textSearch.length, index+this.state.textSearch.length+16)}
+                        {label.slice(index + this.state.textSearch.length, index + this.state.textSearch.length + 16)}
                     </span>;
                 };
                 return this.state.fetching
-                    ? <div>Загрузка</div>
+                    ? <div className={style['preloader']}>Загрузка...</div>
                     : <div className={classNames(isHighlighted ? style['active'] : null, style['item'])}>
                         <div>Номер заказа <span>{item.number}</span>{<span>, {searchColumn(item.column)}</span>}</div>
                         <div>{renderLabel(item.label)}</div>
@@ -77,18 +77,19 @@ export default class Table extends React.Component {
                 overflowX: 'hidden',
                 overflowY: 'auto',
             }}
-            shouldItemRender={(item, value) => searchTextInString(item.label, value)}
+            shouldItemRender={() => true}
             value={this.state.textSearch}
             onChange={e => {
                 const textSearch = e.target.value,
-                    itemsAutocomplete = [],
                     createItem = (item, column) => searchTextInString(item[column], textSearch)
                         ? itemsAutocomplete.push({label: item[column], column, number: item['NUMBER']}) : null;
-                let newStoreTableList = [];
+                let itemsAutocomplete = [], newStoreTableList = [];
                 if (textSearch.length >= 2 && !this.state.fetching) {
+                    itemsAutocomplete = [{label: ''}];
                     this.setState({fetching: true, textSearch, itemsAutocomplete}, () => fetchAutocomplete(textSearch)
                         .then(response => response.json())
                         .then(json => {
+                            itemsAutocomplete = [];
                             if (json.list.length) {
                                 json.list.forEach(responseSearch => {
                                     if (responseSearch.hasOwnProperty('countPage')) return;

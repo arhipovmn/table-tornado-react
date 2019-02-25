@@ -207,35 +207,32 @@ class TableHandler(BaseHandler):
         limit = ' LIMIT %(from)s, %(to)s'
 
         if self.user['CLASS'] == 5:
-            where_for_user = 'WHERE mo.USER_CREATED = %(user_id)s AND ACTIVE = \'Y\' '
+            where_for_user = ' AND mo.USER_CREATED = %(user_id)s '
             sql_params.update({'user_id': self.user['ID']})
 
-        where_or_or = 'WHERE ' if where_for_user == '' else 'AND '
-
         if data.get('filter') and self.user['CLASS'] != 0:
-            where_for_filter = where_or_or + 'mo.STATUS = %(filter)s'
+            where_for_filter = ' AND mo.STATUS = %(filter)s'
             sql_params.update({'filter': data['filter']})
 
         where_for_search = ''
         if data.get('textSearch') is not None and self.user['CLASS'] != 0:
             if data.get('searchColumn') is not None:
                 if data.get('searchColumn') == 'NUMBER':
-                    where_for_search = 'mo.NUMBER LIKE %(search_text)s'
+                    where_for_search = ' AND mo.NUMBER LIKE %(search_text)s'
                 elif data.get('searchColumn') == 'DESCRIPTION':
-                    where_for_search = 'mo.DESCRIPTION LIKE %(search_text)s'
+                    where_for_search = ' AND mo.DESCRIPTION LIKE %(search_text)s'
                 elif data.get('searchColumn') == 'LINK':
-                    where_for_search = 'mo.LINK LIKE %(search_text)s'
+                    where_for_search = ' AND mo.LINK LIKE %(search_text)s'
             else:
-                where_for_search = '(mo.NUMBER LIKE %(search_text)s ' \
+                where_for_search = ' AND (mo.NUMBER LIKE %(search_text)s ' \
                                    'OR mo.DESCRIPTION LIKE %(search_text)s ' \
                                    'OR mo.LINK LIKE %(search_text)s) '
 
             if where_for_search != '':
-                where_for_search = where_or_or + where_for_search
                 sql_params.update({'search_text': '%' + data['textSearch'] + '%'})
                 sql_params.update({'from': 0, 'to': 20})
 
-        count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo '
+        count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo WHERE mo.ACTIVE = \'Y\''
                                     + where_for_user + where_for_filter + where_for_search, sql_params)
 
         if count:
@@ -266,7 +263,7 @@ class TableHandler(BaseHandler):
                                         'DATE_FORMAT(mo.DATE_COMPLETED, %(format_data)s) AS DATE_COMPLETED, '
                                         'mo.DELIVERY_METHOD, mo.STATUS, u.LOGIN '
                                         'FROM master_orders AS mo '
-                                        'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID '
+                                        'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID WHERE mo.ACTIVE = \'Y\''
                                         + where_for_user + where_for_filter + where_for_search +
                                         'ORDER BY mo.DATE_CREATED DESC'
                                         + limit + '', sql_params)

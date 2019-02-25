@@ -19,7 +19,6 @@ export default class Table extends React.Component {
 
         this.filter = '';
 
-
         this.dataSearch = {
             textSearch: '',
             selectAutocomplete: '',
@@ -38,6 +37,14 @@ export default class Table extends React.Component {
     }
 
     render() {
+        if (this.props.noFilterAndSearch) {
+            this.dataSearch = {
+                textSearch: '',
+                selectAutocomplete: '',
+            };
+            this.filter = '';
+        }
+
         const countPage = this.props.table.list.length ? this.props.table.list[(this.props.table.list.length - 1)].countPage : 1;
 
         return <div className={style['center']}>
@@ -53,13 +60,17 @@ export default class Table extends React.Component {
                     {window.auth
                         ? <div className={style['filter-button']}>
                             <button className={classNames(getColorStatus('new', 'button'))}
-                                    onClick={() => ::this.handlerPaginator(1, 'new')}>Новые</button>
+                                    onClick={() => ::this.handlerPaginator(1, 'new')}>Новые
+                            </button>
                             <button className={classNames(getColorStatus('apply', 'button'))}
-                                    onClick={() => ::this.handlerPaginator(1, 'apply')}>Принятые</button>
+                                    onClick={() => ::this.handlerPaginator(1, 'apply')}>Принятые
+                            </button>
                             <button className={classNames(getColorStatus('processed', 'button'))}
-                                    onClick={() => ::this.handlerPaginator(1, 'processed')}>Обработанные</button>
+                                    onClick={() => ::this.handlerPaginator(1, 'processed')}>Обработанные
+                            </button>
                             <button className={classNames(getColorStatus('completed', 'button'))}
-                                    onClick={() => ::this.handlerPaginator(1, 'completed')}>Выполненные</button>
+                                    onClick={() => ::this.handlerPaginator(1, 'completed')}>Выполненные
+                            </button>
                         </div>
                         : null}
                 </div>
