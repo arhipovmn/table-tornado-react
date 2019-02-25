@@ -11,24 +11,36 @@
   justify-content: space-between;
 
   > div {
-    display: flex;
-    flex-direction: row;
     width: 50%;
   }
 
   > div:first-child {
+    display: flex;
+    flex-direction: column;
     justify-content: flex-start;
 
-    > div {
+    > div.search-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       font-size: 14px;
+      padding-bottom: 20px;
+    }
+
+    > div.filter-button {
+      text-align: left;
+
+      > button {
+        margin-right: 5px;
+      }
     }
   }
 
   > div:last-child {
+    display: flex;
+    flex-direction: row;
     justify-content: flex-end;
+    align-items: flex-end;
   }
 }
 

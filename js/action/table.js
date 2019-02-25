@@ -1,12 +1,12 @@
 import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow, fetchSearch} from '../helper/tableAjax';
 import {popupAlert} from '../components/PopupAlert/PopupAlert.jsx';
 
-export const getData = (dispatch, currentPage = 1) => {
+export const getData = (dispatch, currentPage = 1, filter = '') => {
     dispatch({
         type: 'FETCHING',
         fetching: true,
     });
-    fetchGetData(currentPage)
+    fetchGetData(currentPage, filter)
         .then(response => response.json())
         .then(json => {
             dispatch({
@@ -19,12 +19,12 @@ export const getData = (dispatch, currentPage = 1) => {
     });
 };
 
-export const search = (dispatch, currentPage = 1, selectAutocomplete) => {
+export const search = (dispatch, currentPage = 1, filter = '', selectAutocomplete) => {
     dispatch({
         type: 'FETCHING',
         fetching: true,
     });
-    fetchSearch(currentPage, selectAutocomplete)
+    fetchSearch(currentPage, filter, selectAutocomplete)
         .then(response => response.json())
         .then(json => {
             if (!Object.keys(json).length) throw 'empty';

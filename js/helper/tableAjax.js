@@ -1,19 +1,21 @@
-export const fetchGetData = (currentPage = 1) => fetch('/table', {
+export const fetchGetData = (currentPage = 1, filter) => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
     body: JSON.stringify({
         mode: 'get',
-        currentPage: currentPage,
+        currentPage,
+        filter,
     }),
 });
 
-export const fetchSearch = (currentPage = 1, selectAutocomplete) => fetch('/table', {
+export const fetchSearch = (currentPage = 1, filter, selectAutocomplete) => fetch('/table', {
     method: 'POST',
     cache: 'no-cache',
     body: JSON.stringify({
         mode: 'search',
         textSearch: selectAutocomplete,
-        currentPage: currentPage,
+        currentPage,
+        filter,
     }),
 });
 

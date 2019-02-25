@@ -59,6 +59,8 @@ export default class Table extends React.Component {
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'center',
+                width: '100%',
+                paddingBottom: '20px',
             }}
             menuStyle={{
                 borderRadius: '0 0 10px 10px',
@@ -104,6 +106,7 @@ export default class Table extends React.Component {
             }}
             inputProps={{
                 className: style['input'],
+                placeholder: 'Поиск',
             }}
             onSelect={selectAutocomplete => {
                 this.props.history.push('/search/1');
@@ -111,7 +114,7 @@ export default class Table extends React.Component {
                     textSearch: this.state.textSearch,
                     selectAutocomplete,
                 });
-                search(window.store.dispatch, 1, selectAutocomplete);
+                search(window.store.dispatch, 1, '', selectAutocomplete);
             }}/>;
     };
 }

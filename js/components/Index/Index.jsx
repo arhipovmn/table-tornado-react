@@ -11,7 +11,6 @@ import defaultStore from '../../reducer/initStore';
 
 import Table from '../../container/table';
 import Auth from '../Auth/Auth.jsx';
-import Search from '../Search/Search.jsx';
 import {getData} from '../../action/table'
 
 import style from './Index.less';
@@ -22,19 +21,11 @@ class Index extends React.Component {
 
         this.state = {
             auth: window.auth,
-            dataSearch: {
-                textSearch: '',
-                selectAutocomplete: '',
-            },
         };
     }
 
     handlerAuth(auth) {
         this.setState({auth});
-    }
-
-    handlerSearch(dataSearch) {
-        this.setState({dataSearch});
     }
 
     render() {
@@ -50,12 +41,7 @@ class Index extends React.Component {
                             ? <span> [<NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>]</span>
                             : null}
                     </div>
-                    <div>
-                        {window.auth
-                            ? <Route path={'/'}
-                                     render={props => <Search handlerSearch={::this.handlerSearch} {...props}/>}/>
-                            : null}
-                    </div>
+                    <div />
                     {this.state.auth
                         ? <div>
                             Добро пожаловать, <b>{window.user_name}</b>!
@@ -67,8 +53,7 @@ class Index extends React.Component {
                     <Switch>
                         <Route exact path={'/'} render={props => <Table {...props}/>}/>
                         <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
-                        <Route exact sensitive strict path={'/search/:key'} render={props => <Table
-                            dataSearch={this.state.dataSearch} {...props}/>}/>
+                        <Route exact sensitive strict path={'/search/:key'} render={props => <Table {...props}/>}/>
                         <Route path={'/auth'} render={() => this.state.auth
                             ? <Redirect to={'/'}/>
                             : <Auth handlerAuth={::this.handlerAuth}/>}/>

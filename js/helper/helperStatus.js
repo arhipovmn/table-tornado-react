@@ -1,3 +1,5 @@
+import styleStatus from './css/styleStatus.css';
+
 export const getNameStatus = (status, verb = true) => {
     switch (status) {
         case 'new':
@@ -10,3 +12,5 @@ export const getNameStatus = (status, verb = true) => {
             return verb ? 'Выполнено' : 'Выполненый';
     }
 };
+
+export const getColorStatus = (status, elementsName) => styleStatus[`status-background-color-${elementsName}-${status}`];

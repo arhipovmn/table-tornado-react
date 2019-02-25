@@ -1,0 +1,25 @@
+.status-background-color-button-new {
+  background-color: rgba(255, 180, 180, 1);
+}
+.status-background-color-button-apply {
+  background-color: rgba(137, 241, 249, 1);
+}
+.status-background-color-button-processed {
+  background-color: rgba(241, 227, 140, 1);
+}
+.status-background-color-button-completed {
+  background-color: rgba(177, 223, 187, 1);
+}
+
+.status-background-color-fon-new {
+  background-color: rgba(255, 180, 180, 0.5);
+}
+.status-background-color-fon-apply {
+  background-color: rgba(137, 241, 249, 0.5);
+}
+.status-background-color-fon-processed {
+  background-color: rgba(241, 227, 140, 0.5);
+}
+.status-background-color-fon-completed {
+  background-color: rgba(177, 223, 187, 0.5);
+}

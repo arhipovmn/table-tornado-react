@@ -8,6 +8,7 @@ import {getNameStatus} from '../../../../helper/helperStatus';
 
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
 import {popupAlert} from '../../../PopupAlert/PopupAlert.jsx';
+import {getColorStatus} from '../../../../helper/helperStatus';
 
 import style from './Row.less';
 
@@ -195,7 +196,7 @@ export default class Row extends React.Component {
                     </div>
                 </div>
             </div>
-            <div className={style['td']}>
+            <div className={classNames(style['td'], getColorStatus(this.props.row.STATUS, 'fon'))}>
                 <div>
                     <div className={style['status']}>
                         <div>Статус: {getNameStatus(this.props.row.STATUS)}</div>

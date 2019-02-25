@@ -6,8 +6,8 @@ import Table from '../components/Table/Table.jsx';
 import {getData, search} from '../action/table';
 
 const mapDispatchToProps = dispatch => ({
-    getData: currentPage => getData(dispatch, currentPage),
-    search: (currentPage, selectAutocomplete) => search(dispatch, currentPage, selectAutocomplete),
+    getData: (currentPage, filter) => getData(dispatch, currentPage, filter),
+    search: (currentPage, filter, selectAutocomplete) => search(dispatch, currentPage, filter, selectAutocomplete),
 });
 
 const mapStateToProps = state => ({
