@@ -43,7 +43,7 @@ export default class Table extends React.Component {
         return <div className={style['center']}>
             {window.auth
                 ? <div className={style['head-table']}>
-                    <Search handlerSearch={::this.handlerSearch}/>
+                    <Search handlerSearch={::this.handlerSearch} {...this.props}/>
                 </div>
                 : null}
             <div className={style['head-table']}>
