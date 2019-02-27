@@ -158,9 +158,10 @@ class TableHandler(BaseHandler):
                     return
                 elif data['data']['status'] == 'processed' and data['data']['deliveryMethod'] != '':
                     self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = %s, '
-                                        'DELIVERY_METHOD = %s WHERE ID = %s',
+                                        'DELIVERY_METHOD = %s, TRACK_NUMBER = %s WHERE ID = %s',
                                         [data['data']['status'], date_utc.strftime('%Y-%m-%d %H:%M:%S'),
-                                         data['data']['deliveryMethod'], data['data']['id']])
+                                         data['data']['deliveryMethod'], data['data']['trackNumber'],
+                                         data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_PROCESSED')
                     self.write(self.set_json({'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat()+'+00:00'}))
@@ -261,7 +262,7 @@ class TableHandler(BaseHandler):
                                         'DATE_FORMAT(mo.DATE_APPLY, %(format_data)s) AS DATE_APPLY, '
                                         'DATE_FORMAT(mo.DATE_PROCESSED, %(format_data)s) AS DATE_PROCESSED, '
                                         'DATE_FORMAT(mo.DATE_COMPLETED, %(format_data)s) AS DATE_COMPLETED, '
-                                        'mo.DELIVERY_METHOD, mo.STATUS, u.LOGIN '
+                                        'mo.DELIVERY_METHOD, mo.TRACK_NUMBER, mo.STATUS, u.LOGIN '
                                         'FROM master_orders AS mo '
                                         'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID WHERE mo.ACTIVE = \'Y\''
                                         + where_for_user + where_for_filter + where_for_search +

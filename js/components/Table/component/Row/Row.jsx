@@ -9,6 +9,7 @@ import {getNameStatus} from '../../../../helper/helperStatus';
 import PreLoader from '../../../PreLoader/PreLoader.jsx';
 import {popupAlert} from '../../../PopupAlert/PopupAlert.jsx';
 import {getColorStatus} from '../../../../helper/helperStatus';
+import {getDeliveryMethod} from "../../../../helper/helperDeliveryMethod";
 
 import style from './Row.less';
 
@@ -50,36 +51,41 @@ export default class Row extends React.Component {
     }
 
     changeStatus(status) {
-        if (status === 'processed'
-            && ((!this.refs['trackNumber'].value && !this.state.deliveryMethod === 'ali')
-            || !this.state.deliveryMethod)) {
-            popupAlert({
-                text: !this.state.deliveryMethod
-                    ? <span>Не указан способ доставки!</span>
-                    : <span>Не указан трек-номер!</span>,
-                onOk: () => {
-                },
-            });
-        } else {
-            popupAlert({
-                text: <span>Вы действительно хотите сменить статус на
+        if (status === 'processed') {
+            if ((this.state.deliveryMethod === 'ru.aliexpress' || this.state.deliveryMethod === 'mobiround')
+                && !this.refs['trackNumber'].value) {
+                popupAlert({
+                    text: <span>Не указан трек-номер!</span>,
+                    onOk: () => {
+                    },
+                });
+                return;
+            } else if (!this.state.deliveryMethod) {
+                popupAlert({
+                    text: <span>Не указан способ доставки!</span>,
+                    onOk: () => {
+                    },
+                });
+                return;
+            }
+        }
+        popupAlert({
+            text: <span>Вы действительно хотите сменить статус на
                 <b>{` ${getNameStatus(status, false)} `}</b>
                 для заказа <b>#{this.props.row.NUMBER}</b></span>,
-                onYes: () => {
-                    this.props.changeStatus({
-                        keyStore: this.props.keyStore,
-                        id: this.props.row.ID,
-                        status,
-                        deliveryMethod: this.state.deliveryMethod === 'ru.aliexpress'
-                            ? (this.refs['trackNumber'].value ? this.refs['trackNumber'].value : this.state.deliveryMethod)
-                            : this.state.deliveryMethod,
-                        fetching: fetching => this.setState({fetching}),
-                    });
-                },
-                onNo: () => {
-                },
-            });
-        }
+            onYes: () => {
+                this.props.changeStatus({
+                    keyStore: this.props.keyStore,
+                    id: this.props.row.ID,
+                    status,
+                    deliveryMethod: this.state.deliveryMethod,
+                    trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value  : '',
+                    fetching: fetching => this.setState({fetching}),
+                });
+            },
+            onNo: () => {
+            },
+        });
     }
 
     renderStatus() {
@@ -90,45 +96,66 @@ export default class Row extends React.Component {
                     <button onClick={() => ::this.changeStatus('apply')}>{getNameStatus('apply')}</button>
                 </div>;
             case 'apply':
-                return !this.state.deliveryMethod
-                    ? <div>
-                        {`Способ доставки: `}
+                if (!this.state.deliveryMethod) {
+                    return <div>Способ доставки:
                         <br/>
-                        <label>ru.aliexpress: <input type={'radio'}
-                                                   checked={this.state.deliveryMethod === 'ru.aliexpress'}
-                                                   onClick={() => this.setState({deliveryMethod: 'ru.aliexpress'})}/>
+                        <label>{getDeliveryMethod('ru.aliexpress')}: <input type={'radio'}
+                                                                            checked={this.state.deliveryMethod === 'ru.aliexpress'}
+                                                                            onClick={() => this.setState({deliveryMethod: 'ru.aliexpress'})}/>
                         </label>
                         <br/>
-                        <label>138gsm: <input type={'radio'}
-                                                  checked={this.state.deliveryMethod === '138gsm'}
-                                                  onClick={() => this.setState({deliveryMethod: '138gsm'})}/>
+                        <label>{getDeliveryMethod('138gsm')}: <input type={'radio'}
+                                                                     checked={this.state.deliveryMethod === '138gsm'}
+                                                                     onClick={() => this.setState({deliveryMethod: '138gsm'})}/>
                         </label>
                         <br/>
-                        <label>irk.green-spark: <input type={'radio'}
-                                                  checked={this.state.deliveryMethod === 'irk.green-spark'}
-                                                  onClick={() => this.setState({deliveryMethod: 'irk.green-spark'})}/>
+                        <label>{getDeliveryMethod('irk.green-spark')}: <input type={'radio'}
+                                                                              checked={this.state.deliveryMethod === 'irk.green-spark'}
+                                                                              onClick={() => this.setState({deliveryMethod: 'irk.green-spark'})}/>
                         </label>
                         <br/>
-                        <label>mobiround: <input type={'radio'}
-                                                  checked={this.state.deliveryMethod === 'mobiround'}
-                                                  onClick={() => this.setState({deliveryMethod: 'mobiround'})}/>
+                        <label>{getDeliveryMethod('mobiround')}: <input type={'radio'}
+                                                                        checked={this.state.deliveryMethod === 'mobiround'}
+                                                                        onClick={() => this.setState({deliveryMethod: 'mobiround'})}/>
                         </label>
-                    </div>
-                    : (this.state.deliveryMethod === 'ru.aliexpress'
-                        ? <div>
+                        <br/>
+                        <label>{getDeliveryMethod('4ip')}: <input type={'radio'}
+                                                                  checked={this.state.deliveryMethod === '4ip'}
+                                                                  onClick={() => this.setState({deliveryMethod: '4ip'})}/>
+                        </label>
+                        <br/>
+                        <label>{getDeliveryMethod('stock')}: <input type={'radio'}
+                                                                    checked={this.state.deliveryMethod === 'stock'}
+                                                                    onClick={() => this.setState({deliveryMethod: 'stock'})}/>
+                        </label>
+                    </div>;
+                } else {
+                    if (this.state.deliveryMethod === 'ru.aliexpress') {
+                        return <div>
                             <input placeholder={'трек-номер'} defaultValue={''} ref={'trackNumber'}/>
                             <br/>
                             <button onClick={() => ::this.changeStatus('processed')}>
                                 {getNameStatus('processed')}
                             </button>
-                        </div>
-                        : <div>
-                            Способ доставки: {this.state.deliveryMethod}
+                        </div>;
+                    }
+                    if (this.state.deliveryMethod === 'mobiround') {
+                        return <div>
+                            <input placeholder={'трек-номер'} defaultValue={''} ref={'trackNumber'}/>
                             <br/>
                             <button onClick={() => ::this.changeStatus('processed')}>
                                 {getNameStatus('processed')}
                             </button>
-                        </div>);
+                        </div>;
+                    }
+                    return <div>
+                        Способ доставки: {getDeliveryMethod(this.state.deliveryMethod)}
+                        <br/>
+                        <button onClick={() => ::this.changeStatus('processed')}>
+                            {getNameStatus('processed')}
+                        </button>
+                    </div>;
+                }
             case 'processed':
                 return <div>
                     <button onClick={() => ::this.changeStatus('completed')}>{getNameStatus('completed')}</button>
@@ -202,19 +229,17 @@ export default class Row extends React.Component {
                         <div>Статус: {getNameStatus(this.props.row.STATUS)}</div>
                         {this.renderStatus()}
                     </div>
-                    <div>
-                        {this.props.row.DELIVERY_METHOD
-                        && (this.props.row.DELIVERY_METHOD !== '138gsm'
-                        && this.props.row.DELIVERY_METHOD !== 'irk.green-spark'
-                        && this.props.row.DELIVERY_METHOD !== 'mobiround')
-                            ? <div>{`Трек-номер: `}
-                                <a href={`https://gdeposylka.ru/courier/china-ems/tracking/${this.props.row.DELIVERY_METHOD}`}
-                                   target={'_blank'}>{this.props.row.DELIVERY_METHOD}</a>
-                            </div>
-                            : (this.props.row.DELIVERY_METHOD
-                                ? <div>Способ доставки: {this.props.row.DELIVERY_METHOD}</div>
-                                : null)}
-                    </div>
+                    {this.props.row.DELIVERY_METHOD
+                        ? <div>
+                            <div>Способ доставки: {this.props.row.DELIVERY_METHOD}</div>
+                            {this.props.row.TRACK_NUMBER
+                                ? <div>{`Трек-номер: `}
+                                    <a href={`https://gdeposylka.ru/courier/china-ems/tracking/${this.props.row.TRACK_NUMBER}`}
+                                       target={'_blank'}>{this.props.row.TRACK_NUMBER}</a>
+                                </div>
+                                : null}
+                        </div>
+                        : null}
                     <div>
                         {this.props.row.DATE_APPLY
                             ?
@@ -243,6 +268,7 @@ Row.propTypes = {
         DATE_PROCESSED: PropTypes.string,
         DATE_COMPLETED: PropTypes.string,
         DELIVERY_METHOD: PropTypes.string,
+        TRACK_NUMBER: PropTypes.string,
         STATUS: PropTypes.string.isRequired,
     }).isRequired,
     currentPage: PropTypes.number.isRequired,
@@ -260,6 +286,7 @@ Row.defaultProps = {
         DATE_PROCESSED: '',
         DATE_COMPLETED: '',
         DELIVERY_METHOD: '',
+        TRACK_NUMBER: '',
         STATUS: '',
     },
     currentPage: 1,

@@ -74,6 +74,7 @@ export const changeStatus = (dispatch, data) => {
         id: data.id,
         status: data.status,
         deliveryMethod: data.deliveryMethod,
+        trackNumber: data.trackNumber,
     }).then(response => response.json()).then(json => {
         if (!Object.keys(json).length) throw 'empty';
         if (json.status === 'error') throw 'error';

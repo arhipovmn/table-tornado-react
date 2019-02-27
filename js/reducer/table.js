@@ -21,6 +21,9 @@ export default function reducer(state = [], action) {
             if (action.data.deliveryMethod) {
                 state.list[action.data.keyStore]['DELIVERY_METHOD'] = action.data.deliveryMethod;
             }
+            if (action.data.trackNumber) {
+                state.list[action.data.keyStore]['TRACK_NUMBER'] = action.data.trackNumber;
+            }
             state.list[action.data.keyStore][action.data.date_type] = action.data.date;
             return Object.assign({}, state);
 
