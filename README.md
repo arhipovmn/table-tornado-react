@@ -29,12 +29,13 @@ CREATE TABLE `master_orders` (
   `DATE_APPLY` datetime DEFAULT NULL,
   `DATE_PROCESSED` datetime DEFAULT NULL,
   `DATE_COMPLETED` datetime DEFAULT NULL,
-  `DELIVERY_METHOD` text,
+  `DELIVERY_METHOD` varchar(60) DEFAULT NULL,
+  `TRACK_NUMBER` varchar(20) DEFAULT NULL,
   `STATUS` enum('new','apply','processed','completed') NOT NULL DEFAULT 'new',
   `ACTIVE` enum('Y','N') NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `master_orders_id_uindex` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
