@@ -211,7 +211,7 @@ export default class Row extends React.Component {
                                            target={'_blank'}>{this.props.row.LINK}</a>
                                     </div>
                                     {checkClass(5) ?
-                                        <div onClick={::this.editLink}>[<span>ред</span>]</div> : null}
+                                        <div onClick={::this.editLink}>[<span>ред</span>]</div> : <div />}
                                 </div>}
                         </div>
                     </div>
