@@ -20,7 +20,7 @@ const srcPath = path.resolve(__dirname, './js');
 
 module.exports = {
     mode: 'development', // this production and webpack.config.js
-    entry: './js/components/Index/Index.jsx',
+    entry: './js/app/index.js',
     output: {
         path: path.resolve(__dirname, './static'),
         filename: 'bundle.js',

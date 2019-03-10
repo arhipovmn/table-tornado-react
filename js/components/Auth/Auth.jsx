@@ -7,6 +7,7 @@ import PreLoader from '../PreLoader/PreLoader.jsx';
 import {popupAlert} from '../../components/PopupAlert/PopupAlert.jsx';
 
 import style from './Auth.less';
+import {initWebSocket} from "../../app/webSocket";
 
 export default class Auth extends React.Component {
     constructor(props) {
@@ -33,6 +34,7 @@ export default class Auth extends React.Component {
                     window.user_name = json.LOGIN;
                     window.user_class = json.CLASS;
                     this.props.handlerAuth(window.auth);
+                    window.ws = initWebSocket();
                 } else {
                     throw json.text;
                 }

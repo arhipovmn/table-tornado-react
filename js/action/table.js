@@ -1,5 +1,6 @@
 import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow, fetchSearch} from '../helper/tableAjax';
 import {popupAlert} from '../components/PopupAlert/PopupAlert.jsx';
+import {sendWebSocket} from '../app/webSocket';
 
 export const getData = (dispatch, currentPage = 1, filter = '') => {
     dispatch({
@@ -80,10 +81,12 @@ export const changeStatus = (dispatch, data) => {
         if (json.status === 'error') throw 'error';
         data.date_type = json.type;
         data.date = json.date;
-        dispatch({
+        const action = {
             type: 'CHANGE_STATUS',
             data,
-        });
+        };
+        dispatch(action);
+        sendWebSocket(action, window.store.getState().table.list[data.keyStore]);
         data.fetching(false);
     }).catch(error => {
         popupAlert({

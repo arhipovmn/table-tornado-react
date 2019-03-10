@@ -1,21 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {Switch, Redirect} from 'react-router';
 import {BrowserRouter, Route, NavLink} from 'react-router-dom';
-import {createStore} from 'redux';
-import {Provider} from 'react-redux'
 import classNames from 'classnames';
-
-import reducer from '../../reducer/index';
-import defaultStore from '../../reducer/initStore';
 
 import Table from '../../container/table';
 import Auth from '../Auth/Auth.jsx';
-import {getData} from '../../action/table'
+import {getData} from '../../action/table';
 
 import style from './Index.less';
 
-class Index extends React.Component {
+export default class Index extends React.Component {
     constructor(props) {
         super(props);
 
@@ -41,7 +35,7 @@ class Index extends React.Component {
                             ? <span> [<NavLink to={'/auth'} activeClassName={style['selected']}>Войти</NavLink>]</span>
                             : null}
                     </div>
-                    <div />
+                    <div/>
                     {this.state.auth
                         ? <div>
                             Добро пожаловать, <b>{window.user_name}</b>!
@@ -62,12 +56,4 @@ class Index extends React.Component {
             </div>
         </BrowserRouter>;
     };
-}
-
-window.store = createStore(reducer, defaultStore, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-
-if (document.getElementById('index')) {
-    ReactDOM.render(<Provider store={window.store}>
-        <Index/>
-    </Provider>, document.getElementById('index'));
 }

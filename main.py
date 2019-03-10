@@ -5,6 +5,8 @@ import os
 
 import tornado.web
 
+import tornado.websocket
+
 import tornado.template
 
 import tornado.escape
@@ -37,14 +39,17 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         user_id = self.get_secure_cookie('auth')
-        user_id = 0 if user_id is None else int(user_id)
-        user_row = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
-        if user_row:
-            self.user = self.cursor.fetchone()
-            user_id = self.user['ID']
+        if user_id is None:
+            return 0
         else:
-            self.clear_cookie('auth')
-            user_id = 0
+            user_id = int(user_id)
+            user_row = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
+            if user_row:
+                self.user = self.cursor.fetchone()
+                user_id = self.user['ID']
+            else:
+                self.clear_cookie('auth')
+                user_id = 0
 
         return user_id
 
@@ -57,7 +62,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.render('index.html', title='Таблица', auth=auth, user_name=self.user['LOGIN'],
                     user_class=self.user['CLASS'])
 
-    def check_auth(self, data):
+    def authorization(self, data):
         user_row = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
         if user_row:
             row = self.cursor.fetchone()
@@ -67,12 +72,6 @@ class BaseHandler(tornado.web.RequestHandler):
                 return 0
 
         return 0
-
-    def get_json(self):
-        return tornado.escape.json_decode(self.request.body)
-
-    def set_json(self, object):
-        return tornado.escape.json_encode(object)
 
     def get_date_order(self, id, date_field):
         count = self.cursor.execute('SELECT ' + date_field + ' FROM master_orders WHERE ID = %s;', [id])
@@ -93,14 +92,14 @@ class AuthHandler(BaseHandler):
         self.default_response()
 
     def post(self):
-        data = self.get_json()
-        user_id = self.check_auth(data)
+        data = tornado.escape.json_decode(self.request.body)
+        user_id = self.authorization(data)
         user_id = {'ID': 0} if user_id == 0 else user_id
         if user_id['ID']:
             self.set_secure_cookie('auth', str(user_id['ID']))
-            self.write(self.set_json({'text': 'ok', 'LOGIN': user_id['LOGIN'], 'CLASS': user_id['CLASS']}))
+            self.write(tornado.escape.json_encode({'text': 'ok', 'LOGIN': user_id['LOGIN'], 'CLASS': user_id['CLASS']}))
         else:
-            self.write(self.set_json({'text': 'error'}))
+            self.write(tornado.escape.json_encode({'text': 'error'}))
 
 
 class QuitHandler(BaseHandler):
@@ -114,13 +113,13 @@ class TableHandler(BaseHandler):
         self.set_status(405)
 
     def post(self):
-        data = self.get_json()
+        data = tornado.escape.json_decode(self.request.body)
 
         self.get_current_user()
 
         if data['mode'] == 'get':
             row = self.get_row(data)
-            self.write(self.set_json(row['list']))
+            self.write(tornado.escape.json_encode(row['list']))
 
         elif data['mode'] == 'saveRow':
 
@@ -154,7 +153,8 @@ class TableHandler(BaseHandler):
                                          date_utc.strftime('%Y-%m-%d %H:%M:%S'), data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_APPLY')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat()+'+00:00'}))
+                    self.write(tornado.escape.json_encode(
+                        {'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat() + '+00:00'}))
                     return
                 elif data['data']['status'] == 'processed' and data['data']['deliveryMethod'] != '':
                     self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = %s, '
@@ -164,7 +164,8 @@ class TableHandler(BaseHandler):
                                          data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_PROCESSED')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat()+'+00:00'}))
+                    self.write(tornado.escape.json_encode(
+                        {'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat() + '+00:00'}))
                     return
                 elif data['data']['status'] == 'completed':
                     self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = %s '
@@ -173,12 +174,13 @@ class TableHandler(BaseHandler):
                                          data['data']['id']])
                     connectionMysql.commit()
                     date = self.get_date_order(data['data']['id'], 'DATE_COMPLETED')
-                    self.write(self.set_json({'status': 'ok', 'type': 'DATE_COMPLETED', 'date': date.isoformat()+'+00:00'}))
+                    self.write(tornado.escape.json_encode(
+                        {'status': 'ok', 'type': 'DATE_COMPLETED', 'date': date.isoformat() + '+00:00'}))
                     return
 
-                self.write(self.set_json({'status': 'error'}))
+                self.write(tornado.escape.json_encode({'status': 'error'}))
             else:
-                self.write(self.set_json({'status': 'error'}))
+                self.write(tornado.escape.json_encode({'status': 'error'}))
 
         elif data['mode'] == 'deleteRow':
             if self.user['CLASS'] != 0:
@@ -190,13 +192,13 @@ class TableHandler(BaseHandler):
                 connectionMysql.commit()
 
             row = self.get_row(data)
-            self.write(self.set_json(row))
+            self.write(tornado.escape.json_encode(row))
 
         elif data['mode'] == 'search':
             if self.user['CLASS'] != 0:
                 row = self.get_row(data)
 
-            self.write(self.set_json(row))
+            self.write(tornado.escape.json_encode(row))
 
     def get_row(self, data):
         factor = 10
@@ -276,6 +278,36 @@ class TableHandler(BaseHandler):
         return row
 
 
+class EchoWebSocket(tornado.websocket.WebSocketHandler, BaseHandler):
+    web_socket_users = {}
+
+    def check_origin(self, origin):
+        return '{protocol}://{host}'.format_map(
+            {'protocol': self.request.protocol, 'host': self.request.host}) == origin
+
+    def open(self):
+        try:
+            user_id = self.get_current_user()
+            if user_id != 0:
+                self.web_socket_users[self.user['ID']] = self
+            else:
+                self.on_close()
+        except:
+            self.on_close()
+
+    def on_message(self, message):
+        message = tornado.escape.json_decode(message)
+        # if message['action']['type'] == 'CHANGE_STATUS':
+        #     self.web_socket_users[message['data']['USER_CREATED']].write_message(message)
+        for key in self.web_socket_users:
+            if key == self.user['ID']:
+                continue
+            self.web_socket_users[key].write_message(message)
+
+    def on_close(self):
+        self.web_socket_users.pop(self.user['ID'], None)
+
+
 settings = {
     'template_path': os.path.join(dirname, 'template'),
     "static_path": os.path.join(dirname, 'static'),
@@ -286,18 +318,14 @@ settings = {
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
+        (r"/websocket", EchoWebSocket),
         (r"/table", TableHandler),
         (r"/page/[1-9]{1,11}", MainHandler),
         (r"/search/[1-9]{1,11}", MainHandler),
         (r"/auth", AuthHandler),
-        (r"/quit", QuitHandler)
+        (r"/quit", QuitHandler),
     ], **settings)
 
-
-# if __name__ == "__main__":
-#     app = make_app()
-#     app.listen(8888)
-#     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
     app = make_app()

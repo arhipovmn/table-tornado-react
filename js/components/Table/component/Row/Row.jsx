@@ -73,16 +73,14 @@ export default class Row extends React.Component {
             text: <span>Вы действительно хотите сменить статус на
                 <b>{` ${getNameStatus(status, false)} `}</b>
                 для заказа <b>#{this.props.row.NUMBER}</b></span>,
-            onYes: () => {
-                this.props.changeStatus({
-                    keyStore: this.props.keyStore,
-                    id: this.props.row.ID,
-                    status,
-                    deliveryMethod: this.state.deliveryMethod,
-                    trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value  : '',
-                    fetching: fetching => this.setState({fetching}),
-                });
-            },
+            onYes: () => this.props.changeStatus({
+                keyStore: this.props.keyStore,
+                id: this.props.row.ID,
+                status,
+                deliveryMethod: this.state.deliveryMethod,
+                trackNumber: this.refs.hasOwnProperty('trackNumber') ? this.refs['trackNumber'].value : '',
+                fetching: fetching => this.setState({fetching}),
+            }),
             onNo: () => {
             },
         });
@@ -99,34 +97,40 @@ export default class Row extends React.Component {
                 if (!this.state.deliveryMethod) {
                     return <div>Способ доставки:
                         <br/>
-                        <label>{getDeliveryMethod('ru.aliexpress')}: <input type={'radio'}
-                                                                            checked={this.state.deliveryMethod === 'ru.aliexpress'}
-                                                                            onClick={() => this.setState({deliveryMethod: 'ru.aliexpress'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: 'ru.aliexpress'})}>
+                            {getDeliveryMethod('ru.aliexpress')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === 'ru.aliexpress'}/>
                         </label>
                         <br/>
-                        <label>{getDeliveryMethod('138gsm')}: <input type={'radio'}
-                                                                     checked={this.state.deliveryMethod === '138gsm'}
-                                                                     onClick={() => this.setState({deliveryMethod: '138gsm'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: '138gsm'})}>
+                            {getDeliveryMethod('138gsm')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === '138gsm'}/>
                         </label>
                         <br/>
-                        <label>{getDeliveryMethod('irk.green-spark')}: <input type={'radio'}
-                                                                              checked={this.state.deliveryMethod === 'irk.green-spark'}
-                                                                              onClick={() => this.setState({deliveryMethod: 'irk.green-spark'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: 'irk.green-spark'})}>
+                            {getDeliveryMethod('irk.green-spark')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === 'irk.green-spark'}/>
                         </label>
                         <br/>
-                        <label>{getDeliveryMethod('mobiround')}: <input type={'radio'}
-                                                                        checked={this.state.deliveryMethod === 'mobiround'}
-                                                                        onClick={() => this.setState({deliveryMethod: 'mobiround'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: 'mobiround'})}>
+                            {getDeliveryMethod('mobiround')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === 'mobiround'}/>
                         </label>
                         <br/>
-                        <label>{getDeliveryMethod('4ip')}: <input type={'radio'}
-                                                                  checked={this.state.deliveryMethod === '4ip'}
-                                                                  onClick={() => this.setState({deliveryMethod: '4ip'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: '4ip'})}>
+                            {getDeliveryMethod('4ip')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === '4ip'}/>
                         </label>
                         <br/>
-                        <label>{getDeliveryMethod('stock')}: <input type={'radio'}
-                                                                    checked={this.state.deliveryMethod === 'stock'}
-                                                                    onClick={() => this.setState({deliveryMethod: 'stock'})}/>
+                        <label onClick={() => this.setState({deliveryMethod: 'stock'})}>
+                            {getDeliveryMethod('stock')}:
+                            <input type={'radio'}
+                                   checked={this.state.deliveryMethod === 'stock'}/>
                         </label>
                     </div>;
                 } else {
@@ -211,7 +215,7 @@ export default class Row extends React.Component {
                                            target={'_blank'}>{this.props.row.LINK}</a>
                                     </div>
                                     {checkClass(5) ?
-                                        <div onClick={::this.editLink}>[<span>ред</span>]</div> : <div />}
+                                        <div onClick={::this.editLink}>[<span>ред</span>]</div> : <div/>}
                                 </div>}
                         </div>
                     </div>
@@ -263,6 +267,7 @@ Row.propTypes = {
         NUMBER: PropTypes.string.isRequired,
         DESCRIPTION: PropTypes.string.isRequired,
         LINK: PropTypes.string.isRequired,
+        USER_CREATED: PropTypes.number.isRequired,
         DATE_CREATED: PropTypes.string.isRequired,
         DATE_APPLY: PropTypes.string,
         DATE_PROCESSED: PropTypes.string,
