@@ -9,7 +9,9 @@ export const initWebSocket = (ws = new WebSocket(`ws://${window.location.host}/w
                 window.store.dispatch(data.action);
             }
         }
-        sendNotification(data.action.type, data.data);
+        if (data.hasOwnProperty('notify')) {
+            sendNotification(data.action.type, data.data);
+        }
     };
     return ws;
 };

@@ -297,12 +297,12 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def on_message(self, message):
         message = tornado.escape.json_decode(message)
-        # if message['action']['type'] == 'CHANGE_STATUS':
-        #     self.web_socket_users[message['data']['USER_CREATED']].write_message(message)
-        for key in self.web_socket_users:
-            if key == self.user['ID']:
+        for user_id in self.web_socket_users:
+            if user_id == self.user['ID']:
                 continue
-            self.web_socket_users[key].write_message(message)
+            if message['action']['type'] == 'CHANGE_STATUS' and message['data']['USER_CREATED'] == user_id:
+                message['notify'] = True
+            self.web_socket_users[user_id].write_message(message)
 
     def on_close(self):
         self.web_socket_users.pop(self.user['ID'], None)
