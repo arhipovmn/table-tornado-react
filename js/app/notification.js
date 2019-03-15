@@ -1,5 +1,5 @@
 import {getNameStatus} from '../helper/helperStatus';
-import {search} from "../action/table";
+import {getId} from "../action/table";
 
 export const sendNotification = (type, data) => {
     Notification.requestPermission().then(permission => {
@@ -9,10 +9,10 @@ export const sendNotification = (type, data) => {
                 body: `Изменен статус у заказа №${data.NUMBER}, на "${getNameStatus(data.STATUS, false)}"`,
                 data: data.NUMBER,
             });
-            /*notification.onclick = e => {
+            notification.onclick = e => {
                 debugger;
-                search(window.store.dispatch, 1, '', notification.data);
-            }*/
+                getId(window.store.dispatch, data.ID,);
+            }
         }
     });
 };

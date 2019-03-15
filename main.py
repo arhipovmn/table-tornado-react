@@ -121,6 +121,10 @@ class TableHandler(BaseHandler):
             row = self.get_row(data)
             self.write(tornado.escape.json_encode(row['list']))
 
+        elif data['mode'] == 'getId':
+            row = self.get_row({'id': data.get('id')})
+            self.write(tornado.escape.json_encode(row['list']))
+
         elif data['mode'] == 'saveRow':
 
             if self.user['CLASS'] == 5:
@@ -206,12 +210,17 @@ class TableHandler(BaseHandler):
         count_page = 0
         where_for_user = ''
         where_for_filter = ''
+        where_for_id = ''
         sql_params = {'format_data': '%Y-%m-%dT%H:%i:%s+00:00'}
         limit = ' LIMIT %(from)s, %(to)s'
 
         if self.user['CLASS'] == 5:
-            where_for_user = ' AND mo.USER_CREATED = %(user_id)s '
+            where_for_user = ' AND mo.USER_CREATED = %(user_id)s'
             sql_params.update({'user_id': self.user['ID']})
+
+        if data.get('id'):
+            where_for_id = ' AND mo.ID = %(id)s'
+            sql_params.update({'id': data['id']})
 
         if data.get('filter') and self.user['CLASS'] != 0:
             where_for_filter = ' AND mo.STATUS = %(filter)s'
@@ -229,14 +238,14 @@ class TableHandler(BaseHandler):
             else:
                 where_for_search = ' AND (mo.NUMBER LIKE %(search_text)s ' \
                                    'OR mo.DESCRIPTION LIKE %(search_text)s ' \
-                                   'OR mo.LINK LIKE %(search_text)s) '
+                                   'OR mo.LINK LIKE %(search_text)s)'
 
             if where_for_search != '':
                 sql_params.update({'search_text': '%' + data['textSearch'] + '%'})
                 sql_params.update({'from': 0, 'to': 20})
 
         count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo WHERE mo.ACTIVE = \'Y\''
-                                    + where_for_user + where_for_filter + where_for_search, sql_params)
+                                    + where_for_user + where_for_filter + where_for_id + where_for_search, sql_params)
 
         if count:
             row_count = self.cursor.fetchone()
@@ -250,10 +259,13 @@ class TableHandler(BaseHandler):
             else:
                 count_page = 0
 
+            count = row_count['COUNT']
+
         if count_page:
             if data.get('currentPage') is None:
                 end_limit = factor
                 data['currentPage'] = 1
+                sql_params.update({'from': (end_limit - factor), 'to': count})
             else:
                 data['currentPage'] = count_page if data.get('currentPage') > count_page else data.get('currentPage')
                 end_limit = factor if data.get('currentPage') <= 1 else data.get('currentPage') * factor
@@ -267,8 +279,8 @@ class TableHandler(BaseHandler):
                                         'mo.DELIVERY_METHOD, mo.TRACK_NUMBER, mo.STATUS, u.LOGIN '
                                         'FROM master_orders AS mo '
                                         'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID WHERE mo.ACTIVE = \'Y\''
-                                        + where_for_user + where_for_filter + where_for_search +
-                                        'ORDER BY mo.DATE_CREATED DESC'
+                                        + where_for_user + where_for_filter + where_for_id + where_for_search +
+                                        ' ORDER BY mo.DATE_CREATED DESC'
                                         + limit + '', sql_params)
             if count:
                 row['list'] = self.cursor.fetchall()
@@ -320,6 +332,7 @@ def make_app():
         (r"/", MainHandler),
         (r"/websocket", EchoWebSocket),
         (r"/table", TableHandler),
+        (r"/table/[1-9]{1,11}", MainHandler),
         (r"/page/[1-9]{1,11}", MainHandler),
         (r"/search/[1-9]{1,11}", MainHandler),
         (r"/auth", AuthHandler),

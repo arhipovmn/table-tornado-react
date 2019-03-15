@@ -3,11 +3,10 @@ import {sendNotification} from './notification';
 export const initWebSocket = (ws = new WebSocket(`ws://${window.location.host}/websocket`)) => {
     ws.onmessage = response => {
         const data = JSON.parse(response.data);
-        if (window.store.getState().table.list.hasOwnProperty(data.action.data.keyStore)) {
-            const store = window.store.getState().table.list[data.action.data.keyStore];
-            if (store.ID === data.action.data.id) {
-                window.store.dispatch(data.action);
-            }
+        const indexList = window.store.getState().table.list.findIndex(row => row.ID === data.action.data.id);
+        if (indexList !== -1) {
+            data.action.data.keyStore = indexList;
+            window.store.dispatch(data.action);
         }
         if (data.hasOwnProperty('notify')) {
             sendNotification(data.action.type, data.data);

@@ -15,7 +15,13 @@ export default class Table extends React.Component {
     constructor(props) {
         super(props);
 
-        props.getData(1);
+        if (props.rows) {
+            props.getData(1);
+        }
+
+        if (props.row) {
+            props.getId(+props.match.params.key);
+        }
 
         this.filter = '';
 

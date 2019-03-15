@@ -45,9 +45,10 @@ export default class Index extends React.Component {
                 </div>
                 <div className={style['content']}>
                     <Switch>
-                        <Route exact path={'/'} render={props => <Table noFilterAndSearch {...props}/>}/>
-                        <Route exact sensitive strict path={'/page/:key'} render={props => <Table {...props}/>}/>
+                        <Route exact path={'/'} render={props => <Table rows noFilterAndSearch {...props}/>}/>
+                        <Route exact sensitive strict path={'/page/:key'} render={props => <Table rows {...props}/>}/>
                         <Route exact sensitive strict path={'/search/:key'} render={props => <Table {...props}/>}/>
+                        <Route exact sensitive strict path={'/table/:key'} render={props => <Table row {...props}/>}/>
                         <Route path={'/auth'} render={() => this.state.auth
                             ? <Redirect to={'/'}/>
                             : <Auth handlerAuth={::this.handlerAuth}/>}/>

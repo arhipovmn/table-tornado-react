@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
 
+import {Link} from 'react-router-dom';
+
 import {checkClass} from '../../../../helper/helperAuth';
 import {getNameStatus} from '../../../../helper/helperStatus';
 
@@ -186,7 +188,12 @@ export default class Row extends React.Component {
     render() {
         return <PreLoader className={style['tr']} fetching={this.state.fetching}>
             <div className={style['td']}>
-                <div>{this.props.row.NUMBER}</div>
+                <div>
+                    <Link to={`/table/${this.props.row.ID}`}
+                          onClick={() => this.props.getId(this.props.row.ID)}>
+                        {this.props.row.NUMBER}
+                    </Link>
+                </div>
                 {window.auth ? <button title={'Удалить'}
                                        onClick={::this.deleteRow}>X</button> : null}
             </div>

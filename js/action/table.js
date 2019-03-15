@@ -1,4 +1,11 @@
-import {fetchGetData, fetchSaveData, fetchChangeStatus, fetchDeleteRow, fetchSearch} from '../helper/tableAjax';
+import {
+    fetchGetData,
+    fetchGetId,
+    fetchSaveData,
+    fetchChangeStatus,
+    fetchDeleteRow,
+    fetchSearch,
+} from '../helper/tableAjax';
 import {popupAlert} from '../components/PopupAlert/PopupAlert.jsx';
 import {sendWebSocket} from '../app/webSocket';
 
@@ -14,6 +21,24 @@ export const getData = (dispatch, currentPage = 1, filter = '') => {
                 type: 'GET_DATA',
                 newState: json,
                 currentPage: currentPage,
+            });
+        }).catch(error => {
+        console.error(error);
+    });
+};
+
+export const getId = (dispatch, id) => {
+    dispatch({
+        type: 'FETCHING',
+        fetching: true,
+    });
+    fetchGetId(id)
+        .then(response => response.json())
+        .then(json => {
+            dispatch({
+                type: 'GET_DATA',
+                newState: json,
+                currentPage: 1,
             });
         }).catch(error => {
         console.error(error);
