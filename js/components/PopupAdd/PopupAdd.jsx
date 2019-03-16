@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
 import {fetchGetData, fetchSaveData} from '../../helper/tableAjax';
+import {sendWebSocket} from "../../app/webSocket";
 
 import PreLoader from '../PreLoader/PreLoader.jsx';
 import {popupAlert} from '../PopupAlert/PopupAlert.jsx';
 
 import style from './PopupAdd.less';
-import PropTypes from 'prop-types';
 
 class Add extends React.Component {
     constructor(props) {
@@ -41,11 +42,13 @@ class Add extends React.Component {
             .then(response => response.json())
             .then(json => {
                 if (!Object.keys(json).length) throw 'empty';
-                window.store.dispatch({
+                const action = {
                     type: 'GET_DATA',
                     newState: json,
                     currentPage: 1,
-                });
+                };
+                window.store.dispatch(action);
+                sendWebSocket(action, {});
             }).catch(error => {
             popupAlert({
                 text: error,
