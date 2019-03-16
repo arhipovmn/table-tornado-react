@@ -1,6 +1,8 @@
 import {sendNotification} from './notification';
 
-export const initWebSocket = (ws = new WebSocket(`ws://${window.location.host}/websocket`)) => {
+export const initWebSocket = () => {
+    if (!window.auth) return;
+    const ws = new WebSocket(`ws://${window.location.host}/websocket`);
     ws.onmessage = response => {
         const data = JSON.parse(response.data);
         const indexList = window.store.getState().table.list.findIndex(row => row.ID === data.action.data.id);
@@ -15,4 +17,5 @@ export const initWebSocket = (ws = new WebSocket(`ws://${window.location.host}/w
     return ws;
 };
 
-export const sendWebSocket = (action, data) => window.ws.send(JSON.stringify({action, data}));
+export const sendWebSocket = (action, data) =>
+    !window.ws ? undefined : window.ws.send(JSON.stringify({action, data}));

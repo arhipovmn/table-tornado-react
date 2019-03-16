@@ -298,13 +298,10 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler, BaseHandler):
             {'protocol': self.request.protocol, 'host': self.request.host}) == origin
 
     def open(self):
-        try:
-            user_id = self.get_current_user()
-            if user_id != 0:
-                self.web_socket_users[self.user['ID']] = self
-            else:
-                self.on_close()
-        except:
+        user_id = self.get_current_user()
+        if user_id != 0:
+            self.web_socket_users[self.user['ID']] = self
+        else:
             self.on_close()
 
     def on_message(self, message):
@@ -312,9 +309,14 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler, BaseHandler):
         for user_id in self.web_socket_users:
             if user_id == self.user['ID']:
                 continue
+            # отправляем уведомление и изменяем состояние создателю изменяемого заказа
             if message['action']['type'] == 'CHANGE_STATUS' and message['data']['USER_CREATED'] == user_id:
                 message['notify'] = True
-            self.web_socket_users[user_id].write_message(message)
+                self.web_socket_users[user_id].write_message(message)
+            # отправляем уведомление и изменяем состояние всем админам
+            if self.web_socket_users[user_id].user['CLASS'] == 10:
+                message['notify'] = True
+                self.web_socket_users[user_id].write_message(message)
 
     def on_close(self):
         self.web_socket_users.pop(self.user['ID'], None)
