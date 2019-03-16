@@ -304,16 +304,19 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler, BaseHandler):
         else:
             self.on_close()
 
+    # ловим сообщения от клиентов и по необходимости уведомляем
+    # (и изменяем состояние приложения) всех кого и кому надо
     def on_message(self, message):
         message = tornado.escape.json_decode(message)
         for user_id in self.web_socket_users:
+            # не отправляем самому себе
             if user_id == self.user['ID']:
                 continue
-            # отправляем уведомление и изменяем состояние создателю изменяемого заказа
+            # при изменение статуса заказа, отправляем создателю заказа
             if message['action']['type'] == 'CHANGE_STATUS' and message['data']['USER_CREATED'] == user_id:
                 message['notify'] = True
                 self.web_socket_users[user_id].write_message(message)
-            # отправляем уведомление и изменяем состояние всем админам
+            # отправляем всем админам
             if self.web_socket_users[user_id].user['CLASS'] == 10:
                 message['notify'] = True
                 self.web_socket_users[user_id].write_message(message)

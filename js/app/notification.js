@@ -10,7 +10,6 @@ export const sendNotification = (type, data) => {
                 data: data.NUMBER,
             });
             notification.onclick = e => {
-                debugger;
                 getId(window.store.dispatch, data.ID,);
             }
         }
