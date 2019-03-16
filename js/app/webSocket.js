@@ -17,5 +17,11 @@ export const initWebSocket = () => {
     return ws;
 };
 
+/**
+ * Отправить сообщение на ws сервер
+ * @param action - тоже самое что в dispatch() редакса отправляем, чтобы другие клиенты это так же выполнили на своей стороне
+ * @param data - any {}, крч вспомогательный объект, например одна строка таблицы (store.getState().table.list[N])
+ * @returns {*}
+ */
 export const sendWebSocket = (action, data) =>
     !window.ws ? undefined : window.ws.send(JSON.stringify({action, data}));
