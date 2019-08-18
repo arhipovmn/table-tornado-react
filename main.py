@@ -43,7 +43,7 @@ class BaseHandler(tornado.web.RequestHandler):
             return 0
         else:
             user_id = int(user_id)
-            user_row = self.cursor.execute('SELECT * FROM users WHERE ID = %s;', [user_id])
+            user_row = self.query('SELECT * FROM users WHERE ID = %s;', [user_id])
             if user_row:
                 self.user = self.cursor.fetchone()
                 user_id = self.user['ID']
@@ -63,7 +63,7 @@ class BaseHandler(tornado.web.RequestHandler):
                     user_class=self.user['CLASS'])
 
     def authorization(self, data):
-        user_row = self.cursor.execute('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
+        user_row = self.query('SELECT * FROM users WHERE LOGIN = %s;', [data['login']])
         if user_row:
             row = self.cursor.fetchone()
             if row['PASSWORD'] == data['password']:
@@ -74,12 +74,19 @@ class BaseHandler(tornado.web.RequestHandler):
         return 0
 
     def get_date_order(self, id, date_field):
-        count = self.cursor.execute('SELECT ' + date_field + ' FROM master_orders WHERE ID = %s;', [id])
+        count = self.query('SELECT ' + date_field + ' FROM master_orders WHERE ID = %s;', [id])
         if count:
             row = self.cursor.fetchone()
             return row[date_field]
         else:
             return 0
+
+    def query(self, sql, args):
+        try:
+            return self.cursor.execute(sql, args)
+        except:
+            connectionMysql.ping(reconnect=True)
+            return self.cursor.execute(sql, args)
 
 
 class MainHandler(BaseHandler):
@@ -130,11 +137,11 @@ class TableHandler(BaseHandler):
             if self.user['CLASS'] == 5:
 
                 if data['data'].get('id'):
-                    self.cursor.execute('UPDATE master_orders SET ' + data['data']['type'] + ' = %s WHERE ID = %s',
+                    self.query('UPDATE master_orders SET ' + data['data']['type'] + ' = %s WHERE ID = %s',
                                         [data['data']['value'], data['data']['id']])
                 else:
                     date_utc = datetime.utcnow()
-                    self.cursor.execute(
+                    self.query(
                         'INSERT INTO master_orders (NUMBER, DESCRIPTION, LINK, USER_CREATED, DATE_CREATED) '
                         'VALUE (%s, %s, %s, %s, %s)',
                         [data['data']['number'], data['data']['description'], data['data']['link'],
@@ -151,7 +158,7 @@ class TableHandler(BaseHandler):
                 date_utc = datetime.utcnow()
 
                 if data['data']['status'] == 'apply':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_APPLY = %s '
+                    self.query('UPDATE master_orders SET STATUS = %s, DATE_APPLY = %s '
                                         'WHERE ID = %s',
                                         [data['data']['status'],
                                          date_utc.strftime('%Y-%m-%d %H:%M:%S'), data['data']['id']])
@@ -161,7 +168,7 @@ class TableHandler(BaseHandler):
                         {'status': 'ok', 'type': 'DATE_APPLY', 'date': date.isoformat() + '+00:00'}))
                     return
                 elif data['data']['status'] == 'processed' and data['data']['deliveryMethod'] != '':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = %s, '
+                    self.query('UPDATE master_orders SET STATUS = %s, DATE_PROCESSED = %s, '
                                         'DELIVERY_METHOD = %s, TRACK_NUMBER = %s WHERE ID = %s',
                                         [data['data']['status'], date_utc.strftime('%Y-%m-%d %H:%M:%S'),
                                          data['data']['deliveryMethod'], data['data']['trackNumber'],
@@ -172,7 +179,7 @@ class TableHandler(BaseHandler):
                         {'status': 'ok', 'type': 'DATE_PROCESSED', 'date': date.isoformat() + '+00:00'}))
                     return
                 elif data['data']['status'] == 'completed':
-                    self.cursor.execute('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = %s '
+                    self.query('UPDATE master_orders SET STATUS = %s, DATE_COMPLETED = %s '
                                         'WHERE ID = %s',
                                         [data['data']['status'], date_utc.strftime('%Y-%m-%d %H:%M:%S'),
                                          data['data']['id']])
@@ -192,7 +199,7 @@ class TableHandler(BaseHandler):
                 if self.user['CLASS'] == 5:
                     where_delete = ' AND USER_CREATED = %s' % self.user['ID']
 
-                self.cursor.execute('DELETE FROM master_orders WHERE ID = %s' + where_delete, [data['id']])
+                self.query('DELETE FROM master_orders WHERE ID = %s' + where_delete, [data['id']])
                 connectionMysql.commit()
 
             row = self.get_row(data)
@@ -244,7 +251,7 @@ class TableHandler(BaseHandler):
                 sql_params.update({'search_text': '%' + data['textSearch'] + '%'})
                 sql_params.update({'from': 0, 'to': 20})
 
-        count = self.cursor.execute('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo WHERE mo.ACTIVE = \'Y\''
+        count = self.query('SELECT COUNT(mo.ID) as COUNT FROM master_orders as mo WHERE mo.ACTIVE = \'Y\''
                                     + where_for_user + where_for_filter + where_for_id + where_for_search, sql_params)
 
         if count:
@@ -271,17 +278,17 @@ class TableHandler(BaseHandler):
                 end_limit = factor if data.get('currentPage') <= 1 else data.get('currentPage') * factor
                 sql_params.update({'from': (end_limit - factor), 'to': factor})
 
-            count = self.cursor.execute('SELECT mo.ID, mo.NUMBER, mo.DESCRIPTION, mo.LINK, mo.USER_CREATED, '
-                                        'DATE_FORMAT(mo.DATE_CREATED, %(format_data)s) AS DATE_CREATED, '
-                                        'DATE_FORMAT(mo.DATE_APPLY, %(format_data)s) AS DATE_APPLY, '
-                                        'DATE_FORMAT(mo.DATE_PROCESSED, %(format_data)s) AS DATE_PROCESSED, '
-                                        'DATE_FORMAT(mo.DATE_COMPLETED, %(format_data)s) AS DATE_COMPLETED, '
-                                        'mo.DELIVERY_METHOD, mo.TRACK_NUMBER, mo.STATUS, u.LOGIN '
-                                        'FROM master_orders AS mo '
-                                        'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID WHERE mo.ACTIVE = \'Y\''
-                                        + where_for_user + where_for_filter + where_for_id + where_for_search +
-                                        ' ORDER BY mo.DATE_CREATED DESC'
-                                        + limit + '', sql_params)
+            count = self.query('SELECT mo.ID, mo.NUMBER, mo.DESCRIPTION, mo.LINK, mo.USER_CREATED, '
+                                'DATE_FORMAT(mo.DATE_CREATED, %(format_data)s) AS DATE_CREATED, '
+                                'DATE_FORMAT(mo.DATE_APPLY, %(format_data)s) AS DATE_APPLY, '
+                                'DATE_FORMAT(mo.DATE_PROCESSED, %(format_data)s) AS DATE_PROCESSED, '
+                                'DATE_FORMAT(mo.DATE_COMPLETED, %(format_data)s) AS DATE_COMPLETED, '
+                                'mo.DELIVERY_METHOD, mo.TRACK_NUMBER, mo.STATUS, u.LOGIN '
+                                'FROM master_orders AS mo '
+                                'LEFT JOIN users AS u ON mo.USER_CREATED = u.ID WHERE mo.ACTIVE = \'Y\''
+                                + where_for_user + where_for_filter + where_for_id + where_for_search +
+                                ' ORDER BY mo.DATE_CREATED DESC'
+                                + limit + '', sql_params)
             if count:
                 row['list'] = self.cursor.fetchall()
                 row['list'].append({'countPage': count_page})
