@@ -8,9 +8,9 @@
     "classnames": "^2.2.6",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
-    "react": "latest",
+    "react": "^16.13.1",
     "react-autocomplete": "^1.8.1",
-    "react-dom": "latest",
+    "react-dom": "^16.13.1",
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
@@ -18,18 +18,18 @@
     "style-loader": "^0.23.1"
   },
   "devDependencies": {
-    "babel-cli": "latest",
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-function-bind": "^6.22.0",
-    "babel-polyfill": "latest",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "latest",
-    "css-loader": "latest",
-    "less": "latest",
-    "less-loader": "latest",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^2.1.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
     "webpack": "^4.29.4",
-    "webpack-cli": "latest"
+    "webpack-cli": "^3.3.12"
   },
   "repository": {
     "type": "git",
