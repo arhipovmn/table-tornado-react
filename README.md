@@ -12,7 +12,7 @@ This SPA application. This is just a table in which there is a “customer” (C
 ...
 # python -m venv venv  
 # venv\Scripts\activate  
-# pip install tornado==4.0.0  
+# pip install tornado  
 # pip install PyMySQL  
 # npm install  
 ```
